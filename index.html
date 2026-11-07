@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token · 把一句话拆成一个个 Token</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #040605; color: #e7ece9;
+    font-family: -apple-system, "PingFang SC", "Segoe UI", sans-serif;
+    font-size: 14px; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 28px 16px 40px;
+  }
+  #tokviz {
+    width: 100%; max-width: 880px; align-self: center;
+    border: 1px solid #1b231f; border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  }
+  .form-label { display: block; margin-bottom: 4px; }
+  #tokviz textarea.form-control, #tokviz select.form-select {
+    font: inherit; color: #e7ece9; background: #101613;
+    border: 1px solid #26302a; border-radius: 8px; padding: 7px 10px;
+  }
+  #tokviz textarea.form-control { width: 100%; resize: vertical; }
+  #tokviz .btn {
+    font: inherit; color: #dfe7e2; background: #101613;
+    border: 1px solid #26302a; border-radius: 8px;
+    padding: 4px 12px; cursor: pointer;
+  }
+  #tokviz .btn:hover { border-color: #3a463f; }
+  #tokviz .btn-sm { padding: 3px 10px; }
+  .viz-controls, .viz-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .viz-badge { border-radius: 99px; padding: 2px 10px; background: #141b17; color: #9fb0a7; font-size: 12px; }
+  .text-muted { color: #93a19a; }
+  .text-small { font-size: 12px; }
+  .tabular-nums { font-variant-numeric: tabular-nums; }
+  #tokviz [data-lucide] { display: inline-block; width: 16px; height: 16px; }
+  .tk-foot { margin-top: 14px; color: #5f6b64; font-size: 12px; text-align: center; }
+</style>
+</head>
+<body>
+<script>
+/* 独立运行时的 widget 状态兜底：localStorage 持久化 */
+window.zcode = {
+  widgetState: null,
+  setWidgetState: function (s) {
+    this.widgetState = Object.assign({}, this.widgetState, s);
+    try { localStorage.setItem('token-widget-state', JSON.stringify(this.widgetState)); } catch (e) {}
+    return Promise.resolve();
+  }
+};
+try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-state') || 'null'); } catch (e) {}
+</script>
+
+<div id="tokviz">
+  <style>
+    #tokviz {
+      position: relative; overflow: hidden;
+      background: #07090a; color: #e7ece9;
+      border-radius: 14px; padding: 16px;
+    }
+    #tokviz .tk-glyph { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    #tokviz .tk-content { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; }
+    #tokviz .tk-head { display: flex; align-items: center; gap: 8px; }
+    #tokviz .tk-head h3 { margin: 0; color: #f2f7f4; }
+    #tokviz .form-label { color: #e7ece9; }
+    #tokviz .text-muted { color: #93a19a; }
+    #tokviz .tok-chips { display: flex; flex-wrap: wrap; gap: 2px; align-items: flex-start; }
+    #tokviz .tok-chip {
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      padding: 1px 5px; border-radius: 6px; white-space: pre; word-break: break-all;
+      border: 1px solid transparent;
+    }
+    #tokviz .tok-chip:hover { border-color: rgba(233, 255, 240, 0.38); }
+    #tokviz .tk-word  { background: rgba(96, 150, 224, 0.26); }
+    #tokviz .tk-cjk   { background: rgba(177, 122, 216, 0.30); }
+    #tokviz .tk-num   { background: rgba(110, 205, 160, 0.26); }
+    #tokviz .tk-punct { background: rgba(224, 150, 70, 0.24); }
+    #tokviz .tk-ws    { background: rgba(233, 255, 240, 0.10); color: #97a69e; }
+    #tokviz .tk-byte  { background: rgba(224, 102, 96, 0.30); color: #f6dedb; }
+    #tokviz .tok-stat b { font-weight: 500; color: #f2f7f4; }
+    #tokviz .tok-empty { color: #93a19a; }
+    #tokviz .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
+  </style>
+
+  <div class="tk-content">
+    <div class="tk-head">
+      <i data-lucide="scissors" aria-hidden="true"></i>
+      <h3>Token</h3>
+    </div>
+
+    <div class="viz-controls">
+      <label class="form-label" for="tk-enc">词表</label>
+      <select id="tk-enc" class="form-select" style="width:auto">
+        <optgroup label="GPT 系列真实词表">
+          <option value="o200k">o200k_base · GPT-4o</option>
+          <option value="o200k_harmony">o200k_harmony · GPT-5 / gpt-oss</option>
+          <option value="cl100k">cl100k_base · GPT-4 / 3.5</option>
+          <option value="p50k">p50k_base · GPT-3.5 / Codex</option>
+          <option value="r50k">r50k_base · GPT-2 / GPT-3</option>
+        </optgroup>
+        <optgroup label="本地基线（无需联网）">
+          <option value="char">字符级 · 每字符 1 Token</option>
+          <option value="utf8">UTF-8 字节 · 每字节 1 Token</option>
+        </optgroup>
+      </select>
+      <span class="text-muted" style="align-self:center">示例：</span>
+      <button type="button" class="btn btn-sm" data-preset="zh">中文</button>
+      <button type="button" class="btn btn-sm" data-preset="en">English</button>
+      <button type="button" class="btn btn-sm" data-preset="mix">混合 · Emoji</button>
+      <button type="button" class="btn btn-sm" data-preset="code">代码</button>
+    </div>
+
+    <div>
+      <label class="form-label" for="tk-input">输入一句话（支持中英文、emoji、代码）</label>
+      <textarea id="tk-input" class="form-control" rows="3" spellcheck="false"
+        placeholder="在这里输入或粘贴文本…"></textarea>
+    </div>
+
+    <div class="viz-row tok-stat" aria-live="polite">
+      <span><b class="tabular-nums" id="st-tokens">0</b> Tokens</span>
+      <span><b class="tabular-nums" id="st-chars">0</b> 字符</span>
+      <span><b class="tabular-nums" id="st-bytes">0</b> 字节</span>
+      <span><b class="tabular-nums" id="st-ratio">–</b> 字符/Token</span>
+      <span class="viz-badge" id="st-mode">加载词表…</span>
+    </div>
+
+    <div id="tk-chips" class="tok-chips" role="list" aria-label="Token 划分结果"></div>
+
+    <div class="viz-row text-small" style="gap:14px">
+      <span><span class="sw tk-word"></span>单词 / 字母</span>
+      <span><span class="sw tk-cjk"></span>汉字 / 日韩文</span>
+      <span><span class="sw tk-num"></span>数字</span>
+      <span><span class="sw tk-punct"></span>标点 / 符号</span>
+      <span><span class="sw tk-ws"></span>空白</span>
+      <span><span class="sw tk-byte"></span>字节（不完整 UTF-8）</span>
+      <span class="text-muted">悬停色块查看序号与 Token ID · 移动指针会泛起背景波纹</span>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var host = document.getElementById('tokviz');
+      if (host.dataset.glyphInit) return;
+      host.dataset.glyphInit = '1';
+
+      /* ================= 背景：字符波浪（Glyph Swell 风格） ================= */
+      var GLYPH_BG = '#07090a', GLYPH_INK = '#9fe6b0', GLYPH_CREST = '#e9fff0';
+      var RAMP = '·:-+=*#', CELL = 15;
+      var canvas = document.createElement('canvas');
+      canvas.className = 'tk-glyph';
+      canvas.setAttribute('aria-hidden', 'true');
+      host.prepend(canvas);
+      var ctx = canvas.getContext('2d');
+
+      var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var coarse = !matchMedia('(hover: hover) and (pointer: fine)').matches;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var size = coarse ? Math.round(CELL * 0.85) : CELL;
+      var L = RAMP.length;
+
+      /* 字形图集：墨水色一排、浪峰色一排 */
+      var atlas = document.createElement('canvas');
+      var S = Math.ceil(size * dpr);
+      atlas.width = S * L; atlas.height = S * 2;
+      var a = atlas.getContext('2d');
+      function paintAtlas() {
+        a.clearRect(0, 0, atlas.width, atlas.height);
+        a.textAlign = 'center'; a.textBaseline = 'middle';
+        a.font = '500 ' + Math.round(size * 0.82 * dpr) + 'px ui-monospace, Menlo, monospace';
+        [GLYPH_INK, GLYPH_CREST].forEach(function (c, row) {
+          a.fillStyle = c;
+          for (var i = 0; i < L; i++) a.fillText(RAMP[i], i * S + S / 2, row * S + S / 2 + dpr * 0.5);
+        });
+      }
+      paintAtlas();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { paintAtlas(); });
+
+      var W = 0, H = 0, cols = 0, rows = 0;
+      var raf = 0, visible = false, last = 0, alive = true, greeted = false;
+      var swells = [];
+      var t0 = performance.now();
+      function now() { return (performance.now() - t0) / 1000; }
+
+      function resize() {
+        var w = host.clientWidth, h = host.clientHeight;
+        if (w === W && h === H) return;
+        W = w; H = h;
+        canvas.width = Math.round(W * dpr);
+        canvas.height = Math.round(H * dpr);
+        cols = Math.ceil(W / size) + 1;
+        rows = Math.ceil(H / size) + 1;
+      }
+
+      function draw(tDraw) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (!swells.length) return;
+        var ox = ((W - (cols - 1) * size) / 2) * dpr;
+        var oy = ((H - (rows - 1) * size) / 2) * dpr;
+        for (var j = 0; j < rows; j++) {
+          for (var i = 0; i < cols; i++) {
+            var v = 0;
+            for (var k = 0; k < swells.length; k++) {
+              var s = swells[k];
+              var age = tDraw - s.t;
+              var d = Math.hypot(i - s.x, j - s.y);
+              var front = age * 17;
+              var band = Math.exp(-((d - front) * (d - front)) / 8);
+              if (band < 0.01) continue;
+              v += (s.a * band * Math.exp(-age * 0.55)) / (1 + d * 0.015);
+            }
+            if (v < 0.035) continue;
+            var lv = Math.min(L - 1, Math.floor(v * L * 1.05));
+            var crest = v > 0.8 ? 1 : 0;
+            ctx.globalAlpha = Math.min(1, 0.2 + v * 1.15);
+            ctx.drawImage(atlas, lv * S, crest * S, S, S,
+              ox + i * size * dpr - S / 2, oy + j * size * dpr - S / 2, S, S);
+          }
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      function loop(ms) {
+        if (!alive || !visible || document.hidden) { raf = 0; return; }
+        raf = requestAnimationFrame(loop);
+        if (ms - last < (coarse ? 33 : 24)) return;
+        last = ms;
+        resize();
+        while (swells.length && now() - swells[0].t > 6) swells.shift();
+        draw(now());
+        if (!swells.length) { cancelAnimationFrame(raf); raf = 0; }
+      }
+      function wake() {
+        if (!reduced && alive && !raf && visible && !document.hidden)
+          raf = requestAnimationFrame(loop);
+      }
+      function spawn(x, y, amp) {
+        if (reduced) return;
+        swells.push({ x: x, y: y, t: now(), a: amp });
+        if (swells.length > 16) swells.shift();
+        wake();
+      }
+
+      var lastSpawn = 0;
+      host.addEventListener('pointermove', function (e) {
+        var tN = now();
+        if (tN - lastSpawn < 0.12) return;
+        lastSpawn = tN;
+        var r = host.getBoundingClientRect();
+        spawn((e.clientX - r.left) / size, (e.clientY - r.top) / size, 0.9);
+      });
+      host.addEventListener('pointerdown', function (e) {
+        var r = host.getBoundingClientRect();
+        spawn((e.clientX - r.left) / size, (e.clientY - r.top) / size, 1.1);
+      });
+
+      function greet() {
+        if (greeted) return;
+        greeted = true;
+        resize();
+        if (reduced) {
+          /* 静态一帧：中心一圈字形纹理 */
+          swells.push({ x: cols / 2, y: rows / 2, t: -99, a: 0.85 });
+          swells[0].t = now() - 1.2;
+          draw(now());
+          swells.length = 0;
+        } else {
+          spawn(cols / 2, rows / 2, 0.85);
+        }
+      }
+
+      var io = new IntersectionObserver(function (entries) {
+        visible = entries[0].isIntersecting;
+        if (visible) greet();
+        wake();
+      });
+      io.observe(host);
+      var ro = new ResizeObserver(function () {
+        resize();
+        if (reduced && greeted) {
+          swells.push({ x: cols / 2, y: rows / 2, t: now() - 1.2, a: 0.85 });
+          draw(now());
+          swells.length = 0;
+        }
+      });
+      ro.observe(host);
+      document.addEventListener('visibilitychange', wake);
+
+      /* ================= Tokenizer ================= */
+      var $ = function (id) { return document.getElementById(id); };
+      var input = $('tk-input'), sel = $('tk-enc'), chipsEl = $('tk-chips');
+      var stTokens = $('st-tokens'), stChars = $('st-chars'), stBytes = $('st-bytes'),
+          stRatio = $('st-ratio'), stMode = $('st-mode');
+
+      var DEFAULT = '把这句话拆成一个个 Token，看看大模型是怎么“读”文字的。A token can be a whole word, a piece of a word, or even just a space!';
+      var PRESETS = {
+        zh: '大模型并不能直接读懂文字，它先把句子拆成一个个 Token，再把 Token 映射成数字。',
+        en: 'Tokenization turns "Hello world" into the pieces that language models actually read.',
+        mix: 'GPT-4o 发布于 2024 年 🚀，中文 English emoji 混着写也 OK！',
+        code: 'def tokenize(s):\n    return s.split(" ")  # ~1.3 tokens per word'
+      };
+
+      /* ---------- 词表加载（真实 GPT tokenizer） ---------- */
+      var URLS = {
+        o200k: ['https://esm.sh/gpt-tokenizer@4/encoding/o200k_base',
+                'https://cdn.jsdelivr.net/npm/gpt-tokenizer@4/encoding/o200k_base/+esm'],
+        o200k_harmony: ['https://esm.sh/gpt-tokenizer@4/encoding/o200k_harmony',
+                        'https://cdn.jsdelivr.net/npm/gpt-tokenizer@4/encoding/o200k_harmony/+esm'],
+        cl100k: ['https://esm.sh/gpt-tokenizer@4/encoding/cl100k_base',
+                 'https://cdn.jsdelivr.net/npm/gpt-tokenizer@4/encoding/cl100k_base/+esm'],
+        p50k: ['https://esm.sh/gpt-tokenizer@4/encoding/p50k_base',
+               'https://cdn.jsdelivr.net/npm/gpt-tokenizer@4/encoding/p50k_base/+esm'],
+        r50k: ['https://esm.sh/gpt-tokenizer@4/encoding/r50k_base',
+               'https://cdn.jsdelivr.net/npm/gpt-tokenizer@4/encoding/r50k_base/+esm']
+      };
+      var BADGE = {
+        o200k: 'o200k_base · GPT-4o 词表',
+        o200k_harmony: 'o200k_harmony · GPT-5 / gpt-oss 词表',
+        cl100k: 'cl100k_base · GPT-4 / 3.5 词表',
+        p50k: 'p50k_base · GPT-3.5 / Codex 词表',
+        r50k: 'r50k_base · GPT-2 / GPT-3 词表',
+        char: '字符级 · 每个字符 1 Token',
+        utf8: 'UTF-8 字节级 · 每字节 1 Token'
+      };
+      var ALL_ENC = ['o200k', 'o200k_harmony', 'cl100k', 'p50k', 'r50k', 'char', 'utf8'];
+      var mods = {}, mod = null, modEnc = null;
+
+      function ensureModule(enc) {
+        if (mods[enc]) { mod = mods[enc]; modEnc = enc; return Promise.resolve(true); }
+        var chain = Promise.resolve(false);
+        URLS[enc].forEach(function (url) {
+          chain = chain.then(function (ok) {
+            if (ok) return true;
+            return import(url).then(function (m) {
+              if (m && typeof m.encode === 'function') { mods[enc] = m; mod = m; modEnc = enc; return true; }
+              return false;
+            }).catch(function () { return false; });
+          });
+        });
+        return chain;
+      }
+
+      /* ---------- 近似切分（离线兜底） ---------- */
+      var SUF = ['ization', 'ationally', 'ational', 'ability', 'fulness', 'ation', 'tional',
+                 'ition', 'able', 'ible', 'tion', 'sion', 'ness', 'ment', 'ious', 'ing',
+                 'ies', 'est', 'ally', 's'];
+      SUF.sort(function (a, b) { return b.length - a.length; });
+
+      function classifyCp(ch) {
+        if (/\s/.test(ch)) return 'ws';
+        if ((ch >= '\u3400' && ch <= '\u9FFF') || (ch >= '\uF900' && ch <= '\uFAFF') ||
+            (ch >= '\u3000' && ch <= '\u303F') || (ch >= '\u3040' && ch <= '\u30FF') ||
+            (ch >= '\uAC00' && ch <= '\uD7AF')) return 'cjk';
+        if (ch >= '0' && ch <= '9') return 'digit';
+        if (/[\p{L}\p{M}'’\-]/u.test(ch)) return 'letter';
+        if (/\p{Extended_Pictographic}/u.test(ch)) return 'emoji';
+        return 'other';
+      }
+
+      function splitWordText(t) {
+        var m = /^(\s*)([^\s]*)$/.exec(t.text);
+        var lead = m[1] || '', w = m[2];
+        if (w.length <= 4) return [t];
+        var parts = [], rest = w, first = true, guard = 0;
+        while (rest.length > 4 && guard++ < 60) {
+          var cut = Math.min(4, rest.length - 2);
+          for (var k = 0; k < SUF.length; k++) {
+            var s = SUF[k];
+            if (rest.length - s.length >= 2 && rest.slice(-s.length).toLowerCase() === s) {
+              var prev = rest[rest.length - s.length - 1];
+              if (!(s === 's' && (prev === 's' || prev === 'i'))) { cut = rest.length - s.length; break; }
+            }
+          }
+          if (cut < 2) cut = 2;
+          parts.push({ text: (first ? lead : '') + rest.slice(0, cut), type: 'word' });
+          first = false; rest = rest.slice(cut);
+        }
+        if (rest) parts.push({ text: (first ? lead : '') + rest, type: 'word' });
+        return parts;
+      }
+
+      function approxTokens(text) {
+        var runs = [];
+        for (var it = text[Symbol.iterator](), r = it.next(); !r.done; r = it.next()) {
+          var ch = r.value, c = classifyCp(ch);
+          if (runs.length && runs[runs.length - 1].cls === c) runs[runs.length - 1].text += ch;
+          else runs.push({ cls: c, text: ch });
+        }
+        var toks = [];
+        runs.forEach(function (run) {
+          var i, s2;
+          if (run.cls === 'ws') {
+            if (run.text) toks.push({ text: run.text, type: 'ws' });
+          } else if (run.cls === 'cjk') {
+            for (it = run.text[Symbol.iterator](), r = it.next(); !r.done; r = it.next())
+              toks.push({ text: r.value, type: 'cjk' });
+          } else if (run.cls === 'digit') {
+            s2 = run.text;
+            while (s2.length) { var n = Math.min(3, s2.length); toks.push({ text: s2.slice(0, n), type: 'num' }); s2 = s2.slice(n); }
+          } else if (run.cls === 'letter') {
+            toks = toks.concat(splitWordText({ text: run.text, type: 'word' }));
+          } else if (run.cls === 'emoji') {
+            var ms = run.text.match(/\p{Extended_Pictographic}(?:\u200D\p{Extended_Pictographic}|\uFE0F)*/gu) || [run.text];
+            for (i = 0; i < ms.length; i++) toks.push({ text: ms[i], type: 'punct' });
+          } else {
+            for (it = run.text[Symbol.iterator](), r = it.next(); !r.done; r = it.next())
+              toks.push({ text: r.value, type: 'punct' });
+          }
+        });
+        for (var i2 = 1; i2 < toks.length; i2++) {
+          var p = toks[i2 - 1], t = toks[i2];
+          if ((t.type === 'word' || t.type === 'num') && p.type === 'ws' && / $/.test(p.text)) {
+            t.text = ' ' + t.text; p.text = p.text.slice(0, -1);
+          }
+        }
+        return toks.filter(function (t2) { return t2.text; });
+      }
+
+      /* ---------- 真实切分 ---------- */
+      var MAX_CHIPS = 2000;
+      function classifyReal(s) {
+        if (/^\s+$/.test(s)) return 'ws';
+        if (/[\u3400-\u9FFF\uF900-\uFAFF\u3040-\u30FF\uAC00-\uD7AF]/.test(s)) return 'cjk';
+        if (/^\s*[0-9\uFF10-\uFF19]+$/.test(s)) return 'num';
+        if (/^\s*[\p{L}\p{M}][\p{L}\p{M}'’\- ]*$/u.test(s)) return 'word';
+        return 'punct';
+      }
+
+      var UTF8E = new TextEncoder();
+      function byteLen(s) { return UTF8E.encode(s).length; }
+      function hex2(b) { return (b < 16 ? '0' : '') + b.toString(16).toUpperCase(); }
+
+      /* 本地基线：字符级 / UTF-8 字节级 */
+      function localTokens(text, enc) {
+        var chips = [];
+        if (enc === 'char') {
+          var i = 0;
+          for (var it = text[Symbol.iterator](), r = it.next(); !r.done && i < MAX_CHIPS; r = it.next()) {
+            var ch = r.value, cp = ch.codePointAt(0);
+            chips.push({
+              text: ch, type: classifyReal(ch), id: cp, idx: i,
+              tip: '#' + (i + 1) + ' · 码点 U+' + cp.toString(16).toUpperCase() + ' · ' + byteLen(ch) + '字节'
+            });
+            i++;
+          }
+          return { count: Array.from(text).length, chips: chips };
+        }
+        var bytes = UTF8E.encode(text);
+        for (var j = 0; j < bytes.length && j < MAX_CHIPS; j++) {
+          var hex = hex2(bytes[j]);
+          chips.push({
+            text: '\u2039' + hex + '\u203A', type: 'byte', id: bytes[j], idx: j,
+            tip: '#' + (j + 1) + ' · 字节 ' + hex
+          });
+        }
+        return { count: bytes.length, chips: chips };
+      }
+
+      function tokenize(text) {
+        var enc = sel.value;
+        if (enc === 'char' || enc === 'utf8') return localTokens(text, enc);
+        if (mod && modEnc === enc) {
+          try {
+            var ids = mod.encode(text);
+            var shown = ids.length > MAX_CHIPS ? MAX_CHIPS : ids.length;
+            var chips = [];
+            var api = mod.default || mod;
+            var proc = api && api.bytePairEncodingCoreProcessor;
+            var usedGen = false;
+            if (proc && typeof proc.decodeNativeGenerator === 'function') {
+              /* 每个 token 产出字符串或原始字节；跨 token 的字节用流式解码拼回 */
+              try {
+                var dec = new TextDecoder('utf8');
+                var gen = proc.decodeNativeGenerator(ids.slice(0, shown));
+                var i = 0;
+                for (var step = gen.next(); !step.done && i < shown; step = gen.next()) {
+                  var piece = step.value, s = '', bytesHex = null;
+                  if (typeof piece === 'string') {
+                    s = piece;
+                  } else if (piece && piece.length) {
+                    try { s = dec.decode(piece, { stream: true }); } catch (e) { s = ''; }
+                    var hex = [];
+                    for (var k = 0; k < piece.length; k++) hex.push(hex2(piece[k]));
+                    bytesHex = hex.join(' ');
+                  }
+                  var partial = !s;
+                  chips.push({
+                    text: partial ? '\u2039' + ids[i] + '\u203A' : s,
+                    type: partial ? 'byte' : classifyReal(s),
+                    id: ids[i], idx: i, bytesHex: bytesHex,
+                    tip: bytesHex
+                      ? '#' + (i + 1) + ' · ID ' + ids[i] + ' · 字节 ' + bytesHex
+                      : '#' + (i + 1) + ' · ID ' + ids[i] + ' · ' + byteLen(s) + '字节'
+                  });
+                  i++;
+                }
+                usedGen = true;
+              } catch (e) { chips = []; usedGen = false; }
+            }
+            if (!usedGen) {
+              for (var j = 0; j < shown; j++) {
+                var s2;
+                try { s2 = mod.decode([ids[j]]); } catch (e) { s2 = '\uFFFD'; }
+                var partial2 = !s2 || s2.indexOf('\uFFFD') !== -1;
+                chips.push({
+                  text: partial2 ? '\u2039' + ids[j] + '\u203A' : s2,
+                  type: partial2 ? 'byte' : classifyReal(s2),
+                  id: ids[j], idx: j, bytesHex: null,
+                  tip: '#' + (j + 1) + ' · ID ' + ids[j] + ' · ' + (s2 ? byteLen(s2) : 0) + '字节'
+                });
+              }
+            }
+            return { count: ids.length, chips: chips };
+          } catch (e) { /* fall through to approx */ }
+        }
+        var all = approxTokens(text);
+        all.forEach(function (t, i) { t.idx = i; t.tip = '#' + (i + 1) + ' · 近似切分'; });
+        return { count: all.length, chips: all.slice(0, MAX_CHIPS) };
+      }
+
+      /* ---------- 渲染 ---------- */
+      function displayText(s) {
+        var d = s.replace(/\r/g, '').replace(/ /g, '\u2423').replace(/\n/g, '\u00B6').replace(/\t/g, '\u21E5');
+        return d || '\u00B7';
+      }
+
+      function render() {
+        var text = input.value;
+        var cps = Array.from(text).length;
+        var bytes = new TextEncoder().encode(text).length;
+        var res = tokenize(text);
+
+        stTokens.textContent = res.count;
+        stChars.textContent = cps;
+        stBytes.textContent = bytes;
+        stRatio.textContent = res.count ? (cps / res.count).toFixed(2) : '–';
+
+        chipsEl.textContent = '';
+        if (!text) {
+          var note = document.createElement('span');
+          note.className = 'tok-empty';
+          note.textContent = '输入文字后，这里会显示切分结果';
+          chipsEl.appendChild(note);
+          return;
+        }
+        var frag = document.createDocumentFragment();
+        res.chips.forEach(function (t) {
+          var el = document.createElement('span');
+          el.className = 'tok-chip tk-' + t.type;
+          el.setAttribute('role', 'listitem');
+          el.setAttribute('aria-label', 'Token ' + (t.idx + 1) + ': ' + t.text);
+          el.setAttribute('data-tooltip', t.tip || ('#' + (t.idx + 1) + ' · Token'));
+          el.textContent = displayText(t.text);
+          frag.appendChild(el);
+        });
+        chipsEl.appendChild(frag);
+        if (res.count > MAX_CHIPS) {
+          var more = document.createElement('span');
+          more.className = 'tok-empty';
+          more.textContent = '… 仅显示前 ' + MAX_CHIPS + ' 个，共 ' + res.count + ' 个';
+          chipsEl.appendChild(more);
+        }
+      }
+
+      /* ---------- 状态保存 / 恢复 ---------- */
+      var saveT;
+      function saveState() {
+        clearTimeout(saveT);
+        saveT = setTimeout(function () {
+          try {
+            window.zcode && window.zcode.setWidgetState &&
+              window.zcode.setWidgetState({
+                modelContent: { text: input.value.slice(0, 4000), encoding: sel.value }
+              });
+          } catch (e) {}
+        }, 400);
+      }
+
+      function setEncoding(enc) {
+        if (enc === 'char' || enc === 'utf8') {
+          stMode.textContent = BADGE[enc];
+          render();
+          return;
+        }
+        stMode.textContent = '加载词表…';
+        ensureModule(enc).then(function (ok) {
+          if (sel.value !== enc) return;
+          stMode.textContent = ok ? BADGE[enc] : '词表加载失败 · 离线近似切分';
+          render();
+        });
+      }
+
+      input.addEventListener('input', function () { render(); saveState(); });
+      sel.addEventListener('change', function () { saveState(); setEncoding(sel.value); });
+      Array.prototype.forEach.call(document.querySelectorAll('#tokviz [data-preset]'), function (btn) {
+        btn.addEventListener('click', function () {
+          input.value = PRESETS[btn.getAttribute('data-preset')] || '';
+          render(); saveState();
+        });
+      });
+
+      var saved = null;
+      try { saved = window.zcode && window.zcode.widgetState && window.zcode.widgetState.modelContent; } catch (e) {}
+      if (saved && typeof saved.text === 'string') input.value = saved.text;
+      else input.value = DEFAULT;
+      if (saved && ALL_ENC.indexOf(saved.encoding) !== -1) sel.value = saved.encoding;
+
+      render();
+      setEncoding(sel.value);
+
+      window.addEventListener('zcode:set_globals', function (e) {
+        var mc = e && e.detail && e.detail.globals && e.detail.globals.widgetState && e.detail.globals.widgetState.modelContent;
+        if (!mc || typeof mc.text !== 'string') return;
+        if (document.activeElement === input) return;
+        input.value = mc.text;
+        if (mc.encoding && ALL_ENC.indexOf(mc.encoding) !== -1) sel.value = mc.encoding;
+        render();
+      });
+    })();
+  </script>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script>
+if (window.lucide) lucide.createIcons({ attrs: { width: 16, height: 16 } });
+
+/* data-tooltip 兜底（会话内由宿主提供，独立打开时用这个） */
+(function () {
+  var tip = document.createElement('div');
+  tip.setAttribute('role', 'tooltip');
+  tip.style.cssText = 'position:fixed;z-index:99;pointer-events:none;background:#151b18;color:#e7ece9;' +
+    'border:1px solid #2c352f;border-radius:8px;padding:5px 10px;font-size:12px;font-family:ui-monospace,Menlo,monospace;' +
+    'opacity:0;transition:opacity .12s;white-space:nowrap;';
+  document.body.appendChild(tip);
+  var cur = null;
+  document.addEventListener('mouseover', function (e) {
+    var el = e.target && e.target.closest && e.target.closest('[data-tooltip]');
+    if (!el || el === cur) return;
+    cur = el;
+    tip.textContent = el.getAttribute('data-tooltip');
+    tip.style.opacity = '1';
+    var r = el.getBoundingClientRect();
+    var left = Math.max(8, Math.min(window.innerWidth - tip.offsetWidth - 8, r.left + r.width / 2 - tip.offsetWidth / 2));
+    var top = r.top - tip.offsetHeight - 8;
+    if (top < 8) top = r.bottom + 8;
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+  });
+  document.addEventListener('mouseout', function (e) {
+    if (e.target && e.target.closest && e.target.closest('[data-tooltip]')) { cur = null; tip.style.opacity = '0'; }
+  });
+})();
+</script>
+<p class="tk-foot">纯前端页面 · 文本仅在本地处理，不会上传 · 真实词表来自 gpt-tokenizer（CDN 加载）</p>
+</body>
+</html>
