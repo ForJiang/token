@@ -220,7 +220,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
             if (v < 0.035) continue;
             var lv = Math.min(L - 1, Math.floor(v * L * 1.05));
             var crest = v > 0.8 ? 1 : 0;
-            ctx.globalAlpha = Math.min(1, 0.2 + v * 1.15);
+            ctx.globalAlpha = Math.min(0.65, 0.12 + v * 0.55);
             ctx.drawImage(atlas, lv * S, crest * S, S, S,
               ox + i * size * dpr - S / 2, oy + j * size * dpr - S / 2, S, S);
           }
