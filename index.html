@@ -215,7 +215,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
               var front = age * 17;
               var band = Math.exp(-((d - front) * (d - front)) / 8);
               if (band < 0.01) continue;
-              v += (s.a * band * Math.exp(-age * 0.55)) / (1 + d * 0.015);
+              v += (s.a * band * Math.exp(-age * 1.4)) / (1 + d * 0.015);
             }
             if (v < 0.035) continue;
             var lv = Math.min(L - 1, Math.floor(v * L * 1.05));
@@ -234,7 +234,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         if (ms - last < (coarse ? 33 : 24)) return;
         last = ms;
         resize();
-        while (swells.length && now() - swells[0].t > 6) swells.shift();
+        while (swells.length && now() - swells[0].t > 2.5) swells.shift();
         draw(now());
         if (!swells.length) { cancelAnimationFrame(raf); raf = 0; }
       }
@@ -272,7 +272,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         if (reduced) {
           /* 静态一帧：中心一圈字形纹理 */
           swells.push({ x: cols / 2, y: rows / 2, t: -99, a: 0.85 });
-          swells[0].t = now() - 1.2;
+          swells[0].t = now() - 0.55;
           draw(now());
           swells.length = 0;
         } else {
@@ -289,7 +289,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       var onResize = function () {
         resize();
         if (reduced && greeted) {
-          swells.push({ x: cols / 2, y: rows / 2, t: now() - 1.2, a: 0.85 });
+          swells.push({ x: cols / 2, y: rows / 2, t: now() - 0.55, a: 0.85 });
           draw(now());
           swells.length = 0;
         }
