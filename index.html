@@ -157,7 +157,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       /* ================= 背景：字符波浪（Glyph Swell 风格） ================= */
       /* 独立站点设置 window.__TOKEN_FULLPAGE__ = true：画布铺满整个视口，指针全页生效 */
       var FULLPAGE = window.__TOKEN_FULLPAGE__ === true;
-      var GLYPH_BG = '#07090a', GLYPH_INK = '#d97757', GLYPH_CREST = '#f2d6c4';
+      var GLYPH_BG = '#07090a', GLYPH_INK = '#d97757';
       var RAMP = '·:-+=*#', CELL = 15;
       var canvas = document.createElement('canvas');
       canvas.className = 'tk-glyph';
@@ -177,16 +177,14 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       /* 字形图集：墨水色一排、浪峰色一排 */
       var atlas = document.createElement('canvas');
       var S = Math.ceil(size * dpr);
-      atlas.width = S * L; atlas.height = S * 2;
+      atlas.width = S * L; atlas.height = S;
       var a = atlas.getContext('2d');
       function paintAtlas() {
         a.clearRect(0, 0, atlas.width, atlas.height);
         a.textAlign = 'center'; a.textBaseline = 'middle';
         a.font = '500 ' + Math.round(size * 0.82 * dpr) + 'px ui-monospace, Menlo, monospace';
-        [GLYPH_INK, GLYPH_CREST].forEach(function (c, row) {
-          a.fillStyle = c;
-          for (var i = 0; i < L; i++) a.fillText(RAMP[i], i * S + S / 2, row * S + S / 2 + dpr * 0.5);
-        });
+        a.fillStyle = GLYPH_INK;
+        for (var i = 0; i < L; i++) a.fillText(RAMP[i], i * S + S / 2, S / 2 + dpr * 0.5);
       }
       paintAtlas();
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { paintAtlas(); });
@@ -228,9 +226,8 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
             }
             if (v < 0.035) continue;
             var lv = Math.min(L - 1, Math.floor(v * L * 1.05));
-            var crest = v > 0.8 ? 1 : 0;
             ctx.globalAlpha = Math.min(0.65, 0.12 + v * 0.55);
-            ctx.drawImage(atlas, lv * S, crest * S, S, S,
+            ctx.drawImage(atlas, lv * S, 0, S, S,
               ox + i * size * dpr - S / 2, oy + j * size * dpr - S / 2, S, S);
           }
         }
