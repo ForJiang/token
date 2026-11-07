@@ -2,6 +2,8 @@
 
 把一句话拆成一个个 Token 的可视化小工具。
 
+作者：**ForJiang** · [github.com/ForJiang](https://github.com/ForJiang)
+
 ## 功能
 
 - **真实 GPT 词表**（浏览器本地切分，文本不上传）：
