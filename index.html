@@ -89,11 +89,11 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       pointer-events: none; background: var(--blk, rgba(233, 255, 240, 0.22));
     }
     #tokviz .tok-chip.tk-anim .tk-block {
-      animation: tk-sweep 0.42s cubic-bezier(0.87, 0, 0.13, 1) var(--d, 0ms) both;
+      animation: tk-sweep 0.16s cubic-bezier(0.87, 0, 0.13, 1) var(--d, 0ms) both;
     }
     #tokviz .tok-chip.tk-anim .tk-txt {
       opacity: 0;
-      animation: tk-show 1ms linear calc(var(--d, 0ms) + 0.19s) forwards;
+      animation: tk-show 1ms linear calc(var(--d, 0ms) + 0.07s) forwards;
     }
     @keyframes tk-sweep {
       0%    { transform: scaleX(0); transform-origin: left center; }
@@ -604,6 +604,10 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         prevSigs = sigs;
         var animate = !reduced && !allSame;
 
+        /* 顺序接龙：步长随 Token 数自适应，总级联时长恒定 ≤ 约 1.7s */
+        var animCount = Math.max(1, sigs.length - p);
+        var step = Math.max(20, Math.min(120, 1600 / animCount));
+
         var frag = document.createDocumentFragment();
         res.chips.forEach(function (t, i) {
           var el = document.createElement('span');
@@ -614,7 +618,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
           var anim = animate && i >= p;
           if (anim) {
             el.className += ' tk-anim';
-            el.style.setProperty('--d', Math.min((i - p) * 14, 700) + 'ms');
+            el.style.setProperty('--d', Math.round((i - p) * step) + 'ms');
             var blk = document.createElement('span');
             blk.className = 'tk-block';
             el.appendChild(blk);
