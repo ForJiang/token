@@ -68,6 +68,19 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
     #tokviz .tk-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
     #tokviz .tk-brand { display: flex; align-items: center; gap: 8px; }
     #tokviz .tk-enc { display: flex; align-items: center; gap: 8px; }
+    #tokviz .tk-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+    #tokviz .tk-lang {
+      display: flex; align-items: center; gap: 2px; padding: 3px; border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    }
+    #tokviz .tk-lang button {
+      border: none; background: transparent; color: #93a19a; font: inherit;
+      font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px;
+      cursor: pointer; white-space: nowrap; transition: color .15s, background-color .15s;
+    }
+    #tokviz .tk-lang button:hover { color: #e7ece9; background: rgba(255, 255, 255, 0.08); }
+    #tokviz .tk-lang button.tk-on { background: #e7ece9; color: #0a0c0b; cursor: default; }
     #tokviz .tk-enc .form-label { margin: 0; color: #93a19a; }
     #tokviz .tk-enc .form-select { height: 32px; padding: 0 10px; }
     #tokviz .tk-presets .btn { height: 32px; padding: 0 12px; display: inline-flex; align-items: center; }
@@ -122,56 +135,64 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       <span class="tk-brand">
         <h3>Token</h3>
       </span>
-      <span class="tk-enc">
-        <label class="form-label" for="tk-enc">词表</label>
-        <select id="tk-enc" class="form-select" style="width:auto">
-          <optgroup label="GPT 系列真实词表">
+      <span class="tk-tools">
+        <nav class="tk-lang" aria-label="Language">
+          <button type="button" data-lang="zh-CN" class="tk-on" aria-current="true">简体中文</button>
+          <button type="button" data-lang="zh-TW">繁體中文</button>
+          <button type="button" data-lang="en">English</button>
+          <button type="button" data-lang="ja">日本語</button>
+        </nav>
+        <span class="tk-enc">
+          <label class="form-label" for="tk-enc" data-i18n="vocab">词表</label>
+          <select id="tk-enc" class="form-select" style="width:auto">
+          <optgroup id="og-real" label="GPT 系列真实词表">
             <option value="o200k">o200k_base · GPT-4o</option>
             <option value="o200k_harmony">o200k_harmony · GPT-5 / gpt-oss</option>
             <option value="cl100k">cl100k_base · GPT-4 / 3.5</option>
             <option value="p50k">p50k_base · GPT-3.5 / Codex</option>
             <option value="r50k">r50k_base · GPT-2 / GPT-3</option>
           </optgroup>
-          <optgroup label="本地基线（无需联网）">
+          <optgroup id="og-local" label="本地基线（无需联网）">
             <option value="char">字符级 · 每字符 1 Token</option>
             <option value="utf8">UTF-8 字节 · 每字节 1 Token</option>
           </optgroup>
         </select>
+        </span>
       </span>
     </div>
 
     <div class="viz-controls tk-presets">
-      <span class="text-muted">示例</span>
-      <button type="button" class="btn btn-sm" data-preset="en" data-tooltip="K&R 经典写法">英文</button>
-      <button type="button" class="btn btn-sm" data-preset="langs" data-tooltip="五种语言说 Hello World">多语言</button>
-      <button type="button" class="btn btn-sm" data-preset="code" data-tooltip="Python 类 + f-string + 主入口">代码</button>
-      <button type="button" class="btn btn-sm" data-preset="emoji" data-tooltip="Emoji 混排">Emoji</button>
-      <button type="button" class="btn btn-sm" data-preset="b64" data-tooltip="Base64 编码的 Hello World!">Base64</button>
+      <span class="text-muted" data-i18n="examples">示例</span>
+      <button type="button" class="btn btn-sm" data-preset="en" data-tooltip="K&R 经典写法" data-i18n="preset_en" data-i18n-tip="tip_en">英文</button>
+      <button type="button" class="btn btn-sm" data-preset="langs" data-tooltip="五种语言说 Hello World" data-i18n="preset_langs" data-i18n-tip="tip_langs">多语言</button>
+      <button type="button" class="btn btn-sm" data-preset="code" data-tooltip="Python 类 + f-string + 主入口" data-i18n="preset_code" data-i18n-tip="tip_code">代码</button>
+      <button type="button" class="btn btn-sm" data-preset="emoji" data-tooltip="Emoji 混排" data-i18n="preset_emoji" data-i18n-tip="tip_emoji">Emoji</button>
+      <button type="button" class="btn btn-sm" data-preset="b64" data-tooltip="Base64 编码的 Hello World!" data-i18n="preset_b64" data-i18n-tip="tip_b64">Base64</button>
     </div>
 
     <div>
-      <label class="form-label" for="tk-input">输入一句话（支持中英文、emoji、代码）</label>
-      <textarea id="tk-input" class="form-control" rows="3" spellcheck="false"
+      <label class="form-label" for="tk-input" data-i18n="input_label">输入一句话（支持中英文、emoji、代码）</label>
+      <textarea id="tk-input" class="form-control" rows="3" spellcheck="false" data-i18n-ph="placeholder"
         placeholder="在这里输入或粘贴文本…"></textarea>
     </div>
 
     <div class="viz-row tok-stat" aria-live="polite">
-      <span><b class="tabular-nums" id="st-tokens">0</b><span class="st-unit">Tokens</span></span>
-      <span><b class="tabular-nums" id="st-chars">0</b><span class="st-unit">字符</span></span>
-      <span><b class="tabular-nums" id="st-bytes">0</b><span class="st-unit">字节</span></span>
-      <span><b class="tabular-nums" id="st-ratio">–</b><span class="st-unit">字符/Token</span></span>
+      <span><b class="tabular-nums" id="st-tokens">0</b><span class="st-unit" data-i18n="unit_tokens">Tokens</span></span>
+      <span><b class="tabular-nums" id="st-chars">0</b><span class="st-unit" data-i18n="unit_chars">字符</span></span>
+      <span><b class="tabular-nums" id="st-bytes">0</b><span class="st-unit" data-i18n="unit_bytes">字节</span></span>
+      <span><b class="tabular-nums" id="st-ratio">–</b><span class="st-unit" data-i18n="unit_ratio">字符/Token</span></span>
       <span class="viz-badge" id="st-mode">加载词表…</span>
     </div>
 
     <div id="tk-chips" class="tok-chips" role="list" aria-label="Token 划分结果"></div>
 
     <div class="viz-row text-small tk-legend" style="gap:14px">
-      <span><span class="sw tk-word"></span>单词 / 字母</span>
-      <span><span class="sw tk-cjk"></span>汉字 / 日韩文</span>
-      <span><span class="sw tk-num"></span>数字</span>
-      <span><span class="sw tk-punct"></span>标点 / 符号</span>
-      <span><span class="sw tk-ws"></span>空白</span>
-      <span><span class="sw tk-byte"></span>字节（不完整 UTF-8）</span>
+      <span><span class="sw tk-word"></span><span data-i18n="legend_word">单词 / 字母</span></span>
+      <span><span class="sw tk-cjk"></span><span data-i18n="legend_cjk">汉字 / 日韩文</span></span>
+      <span><span class="sw tk-num"></span><span data-i18n="legend_num">数字</span></span>
+      <span><span class="sw tk-punct"></span><span data-i18n="legend_punct">标点 / 符号</span></span>
+      <span><span class="sw tk-ws"></span><span data-i18n="legend_ws">空白</span></span>
+      <span><span class="sw tk-byte"></span><span data-i18n="legend_byte">字节（不完整 UTF-8）</span></span>
     </div>
   </div>
 
@@ -349,6 +370,106 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         b64: 'SGVsbG8gV29ybGQh'
       };
 
+      /* ---------- i18n（语言切换，原地替换） ---------- */
+      var lang = 'zh-CN';
+      var ALL_LANGS = ['zh-CN', 'zh-TW', 'en', 'ja'];
+      var I18N = {
+        'zh-CN': {
+          vocab: '词表', examples: '示例',
+          preset_en: '英文', preset_langs: '多语言', preset_code: '代码', preset_emoji: 'Emoji', preset_b64: 'Base64',
+          tip_en: 'K&R 经典写法', tip_langs: '五种语言说 Hello World', tip_code: 'Python 类 + f-string + 主入口',
+          tip_emoji: 'Emoji 混排', tip_b64: 'Base64 编码的 Hello World!',
+          input_label: '输入一句话（支持中英文、emoji、代码）', placeholder: '在这里输入或粘贴文本…',
+          empty: '输入文字后，这里会显示切分结果',
+          unit_tokens: 'Tokens', unit_chars: '字符', unit_bytes: '字节', unit_ratio: '字符/Token',
+          badge_loading: '加载词表…',
+          badge_o200k: 'o200k_base · GPT-4o 词表', badge_o200k_harmony: 'o200k_harmony · GPT-5 / gpt-oss 词表',
+          badge_cl100k: 'cl100k_base · GPT-4 / 3.5 词表', badge_p50k: 'p50k_base · GPT-3.5 / Codex 词表',
+          badge_r50k: 'r50k_base · GPT-2 / GPT-3 词表', badge_char: '字符级 · 每个字符 1 Token',
+          badge_utf8: 'UTF-8 字节级 · 每字节 1 Token', badge_fail: '词表加载失败 · 离线近似切分',
+          legend_word: '单词 / 字母', legend_cjk: '汉字 / 日韩文', legend_num: '数字',
+          legend_punct: '标点 / 符号', legend_ws: '空白', legend_byte: '字节（不完整 UTF-8）',
+          tip_byte_word: '字节', tip_codepoint: '码点', tip_approx: '近似切分',
+          overflow: function (shown, total) { return '… 仅显示前 ' + shown + ' 个，共 ' + total + ' 个'; }
+        },
+        'zh-TW': {
+          vocab: '詞表', examples: '範例',
+          preset_en: '英文', preset_langs: '多語言', preset_code: '程式碼', preset_emoji: 'Emoji', preset_b64: 'Base64',
+          tip_en: 'K&R 經典寫法', tip_langs: '五種語言說 Hello World', tip_code: 'Python 類別 + f-string + 進入點',
+          tip_emoji: 'Emoji 混排', tip_b64: 'Base64 編碼的 Hello World!',
+          input_label: '輸入一句話（支援中英文、emoji、程式碼）', placeholder: '在這裡輸入或貼上文字…',
+          empty: '輸入文字後，這裡會顯示切分結果',
+          unit_tokens: 'Tokens', unit_chars: '字元', unit_bytes: '位元組', unit_ratio: '字元/Token',
+          badge_loading: '載入詞表…',
+          badge_o200k: 'o200k_base · GPT-4o 詞表', badge_o200k_harmony: 'o200k_harmony · GPT-5 / gpt-oss 詞表',
+          badge_cl100k: 'cl100k_base · GPT-4 / 3.5 詞表', badge_p50k: 'p50k_base · GPT-3.5 / Codex 詞表',
+          badge_r50k: 'r50k_base · GPT-2 / GPT-3 詞表', badge_char: '字元級 · 每字元 1 Token',
+          badge_utf8: 'UTF-8 位元組級 · 每位元組 1 Token', badge_fail: '詞表載入失敗 · 離線近似切分',
+          legend_word: '單詞 / 字母', legend_cjk: '漢字 / 日韓文', legend_num: '數字',
+          legend_punct: '標點 / 符號', legend_ws: '空白', legend_byte: '位元組（不完整 UTF-8）',
+          tip_byte_word: '位元組', tip_codepoint: '碼點', tip_approx: '近似切分',
+          overflow: function (shown, total) { return '… 僅顯示前 ' + shown + ' 個，共 ' + total + ' 個'; }
+        },
+        'en': {
+          vocab: 'Vocab', examples: 'Examples',
+          preset_en: 'English', preset_langs: 'Multilingual', preset_code: 'Code', preset_emoji: 'Emoji', preset_b64: 'Base64',
+          tip_en: 'The classic K&R greeting', tip_langs: 'Hello World in five languages', tip_code: 'Python class + f-string + entry point',
+          tip_emoji: 'Mixed with emoji', tip_b64: 'Hello World! in Base64',
+          input_label: 'Type a sentence (Chinese, English, emoji, code — all welcome)', placeholder: 'Type or paste text here…',
+          empty: 'Tokens will appear here once you type',
+          unit_tokens: 'Tokens', unit_chars: 'chars', unit_bytes: 'bytes', unit_ratio: 'chars/Token',
+          badge_loading: 'Loading vocab…',
+          badge_o200k: 'o200k_base · GPT-4o vocab', badge_o200k_harmony: 'o200k_harmony · GPT-5 / gpt-oss vocab',
+          badge_cl100k: 'cl100k_base · GPT-4 / 3.5 vocab', badge_p50k: 'p50k_base · GPT-3.5 / Codex vocab',
+          badge_r50k: 'r50k_base · GPT-2 / GPT-3 vocab', badge_char: 'Character-level · 1 token per char',
+          badge_utf8: 'UTF-8 bytes · 1 token per byte', badge_fail: 'Failed to load vocab · offline approximation',
+          legend_word: 'Word / letters', legend_cjk: 'CJK / kana', legend_num: 'Digits',
+          legend_punct: 'Punct / symbols', legend_ws: 'Whitespace', legend_byte: 'Bytes (partial UTF-8)',
+          tip_byte_word: 'bytes', tip_codepoint: 'code point', tip_approx: 'approximate',
+          overflow: function (shown, total) { return '… showing first ' + shown + ' of ' + total; }
+        },
+        'ja': {
+          vocab: '語彙', examples: '例',
+          preset_en: '英語', preset_langs: '多言語', preset_code: 'コード', preset_emoji: 'Emoji', preset_b64: 'Base64',
+          tip_en: 'K&R の定番', tip_langs: '5言語の Hello World', tip_code: 'Python クラス + f-string + エントリーポイント',
+          tip_emoji: '絵文字ミックス', tip_b64: 'Base64 エンコードされた Hello World!',
+          input_label: 'ひとこと入力（中国語・英語・emoji・コード対応）', placeholder: 'ここに入力または貼り付け…',
+          empty: '文字を入力すると、ここにトークンが表示されます',
+          unit_tokens: 'Tokens', unit_chars: '文字', unit_bytes: 'バイト', unit_ratio: '文字/Token',
+          badge_loading: '語彙を読み込み中…',
+          badge_o200k: 'o200k_base · GPT-4o 語彙', badge_o200k_harmony: 'o200k_harmony · GPT-5 / gpt-oss 語彙',
+          badge_cl100k: 'cl100k_base · GPT-4 / 3.5 語彙', badge_p50k: 'p50k_base · GPT-3.5 / Codex 語彙',
+          badge_r50k: 'r50k_base · GPT-2 / GPT-3 語彙', badge_char: '文字レベル · 1文字 = 1トークン',
+          badge_utf8: 'UTF-8 バイトレベル · 1バイト = 1トークン', badge_fail: '語彙の読み込み失敗 · オフライン近似',
+          legend_word: '単語 / アルファベット', legend_cjk: '漢字 / かな・ハングル', legend_num: '数字',
+          legend_punct: '句読点 / 記号', legend_ws: '空白', legend_byte: 'バイト（不完全なUTF-8）',
+          tip_byte_word: 'バイト', tip_codepoint: '符号位置', tip_approx: '近似分割',
+          overflow: function (shown, total) { return '… 最初の ' + shown + ' 件のみ表示（全 ' + total + ' 件）'; }
+        }
+      };
+      function t(key) {
+        var d = I18N[lang] || I18N['zh-CN'];
+        var v = d[key];
+        return v === undefined ? I18N['zh-CN'][key] : v;
+      }
+      function qsa(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+      var badgeKey = 'loading';
+      function updateBadge() { stMode.textContent = t('badge_' + badgeKey); }
+      function applyLang(l) {
+        lang = l;
+        document.documentElement.lang = l;
+        var d = I18N[lang] || I18N['zh-CN'];
+        qsa('[data-i18n]').forEach(function (el) { var v = d[el.getAttribute('data-i18n')]; if (v != null) el.textContent = v; });
+        qsa('[data-i18n-tip]').forEach(function (el) { var v = d[el.getAttribute('data-i18n-tip')]; if (v != null) el.setAttribute('data-tooltip', v); });
+        qsa('[data-i18n-ph]').forEach(function (el) { var v = d[el.getAttribute('data-i18n-ph')]; if (v != null) el.setAttribute('placeholder', v); });
+        qsa('#tokviz .tk-lang button').forEach(function (b) {
+          var on = b.getAttribute('data-lang') === lang;
+          b.classList.toggle('tk-on', on);
+          if (on) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+        });
+        updateBadge();
+      }
+
       /* ---------- 词表加载（真实 GPT tokenizer） ---------- */
       var URLS = {
         o200k: ['https://esm.sh/gpt-tokenizer@4/encoding/o200k_base',
@@ -361,15 +482,6 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
                'https://cdn.jsdelivr.net/npm/gpt-tokenizer@4/encoding/p50k_base/+esm'],
         r50k: ['https://esm.sh/gpt-tokenizer@4/encoding/r50k_base',
                'https://cdn.jsdelivr.net/npm/gpt-tokenizer@4/encoding/r50k_base/+esm']
-      };
-      var BADGE = {
-        o200k: 'o200k_base · GPT-4o 词表',
-        o200k_harmony: 'o200k_harmony · GPT-5 / gpt-oss 词表',
-        cl100k: 'cl100k_base · GPT-4 / 3.5 词表',
-        p50k: 'p50k_base · GPT-3.5 / Codex 词表',
-        r50k: 'r50k_base · GPT-2 / GPT-3 词表',
-        char: '字符级 · 每个字符 1 Token',
-        utf8: 'UTF-8 字节级 · 每字节 1 Token'
       };
       var ALL_ENC = ['o200k', 'o200k_harmony', 'cl100k', 'p50k', 'r50k', 'char', 'utf8'];
       var mods = {}, mod = null, modEnc = null;
@@ -488,7 +600,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
             var ch = r.value, cp = ch.codePointAt(0);
             chips.push({
               text: ch, type: classifyReal(ch), id: cp, idx: i,
-              tip: '#' + (i + 1) + ' · 码点 U+' + cp.toString(16).toUpperCase() + ' · ' + byteLen(ch) + '字节'
+              tip: '#' + (i + 1) + ' · ' + t('tip_codepoint') + ' U+' + cp.toString(16).toUpperCase() + ' · ' + byteLen(ch) + ' ' + t('tip_byte_word')
             });
             i++;
           }
@@ -499,7 +611,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
           var hex = hex2(bytes[j]);
           chips.push({
             text: '\u2039' + hex + '\u203A', type: 'byte', id: bytes[j], idx: j,
-            tip: '#' + (j + 1) + ' · 字节 ' + hex
+            tip: '#' + (j + 1) + ' · ' + t('tip_byte_word') + ' ' + hex
           });
         }
         return { count: bytes.length, chips: chips };
@@ -538,8 +650,8 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
                     type: partial ? 'byte' : classifyReal(s),
                     id: ids[i], idx: i, bytesHex: bytesHex,
                     tip: bytesHex
-                      ? '#' + (i + 1) + ' · ID ' + ids[i] + ' · 字节 ' + bytesHex
-                      : '#' + (i + 1) + ' · ID ' + ids[i] + ' · ' + byteLen(s) + '字节'
+                      ? '#' + (i + 1) + ' · ID ' + ids[i] + ' · ' + t('tip_byte_word') + ' ' + bytesHex
+                      : '#' + (i + 1) + ' · ID ' + ids[i] + ' · ' + byteLen(s) + ' ' + t('tip_byte_word')
                   });
                   i++;
                 }
@@ -555,7 +667,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
                   text: partial2 ? '\u2039' + ids[j] + '\u203A' : s2,
                   type: partial2 ? 'byte' : classifyReal(s2),
                   id: ids[j], idx: j, bytesHex: null,
-                  tip: '#' + (j + 1) + ' · ID ' + ids[j] + ' · ' + (s2 ? byteLen(s2) : 0) + '字节'
+                  tip: '#' + (j + 1) + ' · ID ' + ids[j] + ' · ' + (s2 ? byteLen(s2) : 0) + ' ' + t('tip_byte_word')
                 });
               }
             }
@@ -563,7 +675,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
           } catch (e) { /* fall through to approx */ }
         }
         var all = approxTokens(text);
-        all.forEach(function (t, i) { t.idx = i; t.tip = '#' + (i + 1) + ' · 近似切分'; });
+        all.forEach(function (tk, i) { tk.idx = i; tk.tip = '#' + (i + 1) + ' · ' + t('tip_approx'); });
         return { count: all.length, chips: all.slice(0, MAX_CHIPS) };
       }
 
@@ -590,7 +702,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
           prevSigs = null;
           var note = document.createElement('span');
           note.className = 'tok-empty';
-          note.textContent = '输入文字后，这里会显示切分结果';
+          note.textContent = t('empty');
           chipsEl.appendChild(note);
           return;
         }
@@ -636,7 +748,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         if (res.count > MAX_CHIPS) {
           var more = document.createElement('span');
           more.className = 'tok-empty';
-          more.textContent = '… 仅显示前 ' + MAX_CHIPS + ' 个，共 ' + res.count + ' 个';
+          more.textContent = t('overflow')(MAX_CHIPS, res.count);
           chipsEl.appendChild(more);
         }
       }
@@ -649,7 +761,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
           try {
             window.zcode && window.zcode.setWidgetState &&
               window.zcode.setWidgetState({
-                modelContent: { text: input.value.slice(0, 4000), encoding: sel.value }
+                modelContent: { text: input.value.slice(0, 4000), encoding: sel.value, lang: lang }
               });
           } catch (e) {}
         }, 400);
@@ -657,20 +769,27 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
 
       function setEncoding(enc) {
         if (enc === 'char' || enc === 'utf8') {
-          stMode.textContent = BADGE[enc];
-          render();
+          badgeKey = enc; updateBadge(); render();
           return;
         }
-        stMode.textContent = '加载词表…';
+        badgeKey = 'loading'; updateBadge();
         ensureModule(enc).then(function (ok) {
           if (sel.value !== enc) return;
-          stMode.textContent = ok ? BADGE[enc] : '词表加载失败 · 离线近似切分';
+          badgeKey = ok ? enc : 'fail';
+          updateBadge();
           render();
         });
       }
 
       input.addEventListener('input', function () { render(); saveState(); });
       sel.addEventListener('change', function () { saveState(); setEncoding(sel.value); });
+      qsa('#tokviz .tk-lang button').forEach(function (lbtn) {
+        lbtn.addEventListener('click', function () {
+          if (lbtn.getAttribute('data-lang') === lang) return;
+          applyLang(lbtn.getAttribute('data-lang'));
+          render(); saveState();
+        });
+      });
       Array.prototype.forEach.call(document.querySelectorAll('#tokviz [data-preset]'), function (btn) {
         btn.addEventListener('click', function () {
           input.value = PRESETS[btn.getAttribute('data-preset')] || '';
@@ -683,6 +802,8 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       if (saved && typeof saved.text === 'string') input.value = saved.text;
       else input.value = DEFAULT;
       if (saved && ALL_ENC.indexOf(saved.encoding) !== -1) sel.value = saved.encoding;
+      if (saved && ALL_LANGS.indexOf(saved.lang) !== -1) lang = saved.lang;
+      applyLang(lang);
 
       render();
       setEncoding(sel.value);
@@ -693,6 +814,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         if (document.activeElement === input) return;
         input.value = mc.text;
         if (mc.encoding && ALL_ENC.indexOf(mc.encoding) !== -1) sel.value = mc.encoding;
+        if (mc.lang && ALL_LANGS.indexOf(mc.lang) !== -1) applyLang(mc.lang);
         render();
       });
     })();
