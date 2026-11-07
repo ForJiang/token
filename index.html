@@ -72,17 +72,40 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
     #tokviz .text-muted { color: #93a19a; }
     #tokviz .tok-chips { display: flex; flex-wrap: wrap; gap: 2px; align-items: flex-start; min-height: 30px; }
     #tokviz .tok-chip {
+      position: relative;
       font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
       padding: 1px 5px; border-radius: 6px; white-space: pre; word-break: break-all;
       border: 1px solid transparent;
     }
     #tokviz .tok-chip:hover { border-color: rgba(233, 255, 240, 0.38); }
-    #tokviz .tk-word  { background: rgba(96, 150, 224, 0.26); }
-    #tokviz .tk-cjk   { background: rgba(177, 122, 216, 0.30); }
-    #tokviz .tk-num   { background: rgba(110, 205, 160, 0.26); }
-    #tokviz .tk-punct { background: rgba(224, 150, 70, 0.24); }
-    #tokviz .tk-ws    { background: rgba(233, 255, 240, 0.10); color: #97a69e; }
-    #tokviz .tk-byte  { background: rgba(224, 102, 96, 0.30); color: #f6dedb; }
+    #tokviz .tk-word  { background: rgba(96, 150, 224, 0.26); --blk: rgba(96, 150, 224, 0.62); }
+    #tokviz .tk-cjk   { background: rgba(177, 122, 216, 0.30); --blk: rgba(177, 122, 216, 0.66); }
+    #tokviz .tk-num   { background: rgba(110, 205, 160, 0.26); --blk: rgba(110, 205, 160, 0.62); }
+    #tokviz .tk-punct { background: rgba(224, 150, 70, 0.24); --blk: rgba(224, 150, 70, 0.58); }
+    #tokviz .tk-ws    { background: rgba(233, 255, 240, 0.10); color: #97a69e; --blk: rgba(233, 255, 240, 0.20); }
+    #tokviz .tk-byte  { background: rgba(224, 102, 96, 0.30); color: #f6dedb; --blk: rgba(224, 102, 96, 0.62); }
+    #tokviz .tk-block {
+      position: absolute; inset: 0; z-index: 2; border-radius: inherit;
+      pointer-events: none; background: var(--blk, rgba(233, 255, 240, 0.22));
+    }
+    #tokviz .tok-chip.tk-anim .tk-block {
+      animation: tk-sweep 0.42s cubic-bezier(0.87, 0, 0.13, 1) var(--d, 0ms) both;
+    }
+    #tokviz .tok-chip.tk-anim .tk-txt {
+      opacity: 0;
+      animation: tk-show 1ms linear calc(var(--d, 0ms) + 0.19s) forwards;
+    }
+    @keyframes tk-sweep {
+      0%    { transform: scaleX(0); transform-origin: left center; }
+      49.9% { transform: scaleX(1); transform-origin: left center; }
+      50%   { transform: scaleX(1); transform-origin: right center; }
+      100%  { transform: scaleX(0); transform-origin: right center; }
+    }
+    @keyframes tk-show { to { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) {
+      #tokviz .tok-chip .tk-block { display: none; }
+      #tokviz .tok-chip .tk-txt { opacity: 1 !important; animation: none !important; }
+    }
     #tokviz .tok-stat b { font-weight: 500; color: #f2f7f4; }
     #tokviz .st-unit { color: #93a19a; font-style: normal; margin-left: 4px; }
     #tokviz .tk-legend > span { color: #93a19a; }
@@ -547,6 +570,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         return d || '\u00B7';
       }
 
+      var prevSigs = null;
       function render() {
         var text = input.value;
         var cps = Array.from(text).length;
@@ -560,20 +584,45 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
 
         chipsEl.textContent = '';
         if (!text) {
+          prevSigs = null;
           var note = document.createElement('span');
           note.className = 'tok-empty';
           note.textContent = '输入文字后，这里会显示切分结果';
           chipsEl.appendChild(note);
           return;
         }
+
+        /* 前缀 diff：只给“新出现/变化”的 Token 加入场动画 */
+        var sigs = res.chips.map(function (t) {
+          return t.type + '\u0001' + t.text + '\u0001' + (t.id == null ? '' : t.id);
+        });
+        var p = 0;
+        if (prevSigs) {
+          while (p < sigs.length && p < prevSigs.length && sigs[p] === prevSigs[p]) p++;
+        }
+        var allSame = prevSigs && prevSigs.length === sigs.length && p === sigs.length;
+        prevSigs = sigs;
+        var animate = !reduced && !allSame;
+
         var frag = document.createDocumentFragment();
-        res.chips.forEach(function (t) {
+        res.chips.forEach(function (t, i) {
           var el = document.createElement('span');
           el.className = 'tok-chip tk-' + t.type;
           el.setAttribute('role', 'listitem');
           el.setAttribute('aria-label', 'Token ' + (t.idx + 1) + ': ' + t.text);
           el.setAttribute('data-tooltip', t.tip || ('#' + (t.idx + 1) + ' · Token'));
-          el.textContent = displayText(t.text);
+          var anim = animate && i >= p;
+          if (anim) {
+            el.className += ' tk-anim';
+            el.style.setProperty('--d', Math.min((i - p) * 14, 700) + 'ms');
+            var blk = document.createElement('span');
+            blk.className = 'tk-block';
+            el.appendChild(blk);
+          }
+          var txt = document.createElement('span');
+          txt.className = 'tk-txt';
+          txt.textContent = displayText(t.text);
+          el.appendChild(txt);
           frag.appendChild(el);
         });
         chipsEl.appendChild(frag);
