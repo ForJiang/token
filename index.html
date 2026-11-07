@@ -20,15 +20,17 @@
     font: inherit; color: #e7ece9; background: rgba(16, 22, 19, 0.82);
     border: 1px solid #26302a; border-radius: 8px; padding: 7px 10px;
   }
+  #tokviz select.form-select { height: 32px; padding: 0 10px; }
   #tokviz textarea.form-control { width: 100%; resize: vertical; }
   #tokviz textarea.form-control:focus, #tokviz select.form-select:focus { outline: 1px solid #3d4a42; }
   #tokviz .btn {
     font: inherit; color: #dfe7e2; background: rgba(16, 22, 19, 0.82);
     border: 1px solid #26302a; border-radius: 8px;
-    padding: 4px 12px; cursor: pointer;
+    height: 32px; padding: 0 12px; cursor: pointer;
+    display: inline-flex; align-items: center;
   }
   #tokviz .btn:hover { border-color: #3a463f; }
-  #tokviz .btn-sm { padding: 3px 10px; }
+  #tokviz .btn-sm { padding: 0 10px; }
   .viz-controls, .viz-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .viz-badge { border-radius: 99px; padding: 2px 10px; background: rgba(20, 27, 23, 0.85); color: #9fb0a7; font-size: 12px; }
   .text-muted { color: #93a19a; }
@@ -67,6 +69,8 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
     #tokviz .tk-brand { display: flex; align-items: center; gap: 8px; }
     #tokviz .tk-enc { display: flex; align-items: center; gap: 8px; }
     #tokviz .tk-enc .form-label { margin: 0; color: #93a19a; }
+    #tokviz .tk-enc .form-select { height: 32px; padding: 0 10px; }
+    #tokviz .tk-presets .btn { height: 32px; padding: 0 12px; display: inline-flex; align-items: center; }
     #tokviz .tk-head h3 { margin: 0; color: #f2f7f4; }
     #tokviz .form-label { color: #e7ece9; }
     #tokviz .text-muted { color: #93a19a; }
@@ -671,7 +675,6 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       Array.prototype.forEach.call(document.querySelectorAll('#tokviz [data-preset]'), function (btn) {
         btn.addEventListener('click', function () {
           input.value = PRESETS[btn.getAttribute('data-preset')] || '';
-          input.rows = Math.min(12, Math.max(3, input.value.split('\n').length));
           render(); saveState();
         });
       });
