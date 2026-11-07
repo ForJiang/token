@@ -118,7 +118,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       <span class="text-muted">示例</span>
       <button type="button" class="btn btn-sm" data-preset="en" data-tooltip="K&R 经典写法">英文</button>
       <button type="button" class="btn btn-sm" data-preset="langs" data-tooltip="五种语言说 Hello World">多语言</button>
-      <button type="button" class="btn btn-sm" data-preset="code" data-tooltip="Python">代码</button>
+      <button type="button" class="btn btn-sm" data-preset="code" data-tooltip="Python 类 + f-string + 主入口">代码</button>
       <button type="button" class="btn btn-sm" data-preset="emoji" data-tooltip="Emoji 混排">Emoji</button>
       <button type="button" class="btn btn-sm" data-preset="b64" data-tooltip="Base64 编码的 Hello World!">Base64</button>
     </div>
@@ -318,7 +318,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       var PRESETS = {
         en: 'Hello, world!',
         langs: 'Hello World! / 你好，世界！ / こんにちは世界！ / Bonjour le monde ! / ¡Hola Mundo!',
-        code: 'print("Hello, World!")',
+        code: 'class Greeter:\n    """Greets the world in style."""\n\n    def __init__(self, name: str = "World") -> None:\n        self.name = name\n\n    def greet(self) -> str:\n        return f"Hello, {self.name}!"\n\n\nif __name__ == "__main__":\n    for lang in ("en", "zh", "ja"):\n        print(Greeter(lang).greet())',
         emoji: '👋 Hello World! 🌍✨',
         b64: 'SGVsbG8gV29ybGQh'
       };
@@ -618,6 +618,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       Array.prototype.forEach.call(document.querySelectorAll('#tokviz [data-preset]'), function (btn) {
         btn.addEventListener('click', function () {
           input.value = PRESETS[btn.getAttribute('data-preset')] || '';
+          input.rows = Math.min(12, Math.max(3, input.value.split('\n').length));
           render(); saveState();
         });
       });
