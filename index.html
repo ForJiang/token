@@ -62,12 +62,15 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       border-radius: 14px; padding: 16px;
     }
     #tokviz .tk-glyph { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-    #tokviz .tk-content { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; }
-    #tokviz .tk-head { display: flex; align-items: center; gap: 8px; }
+    #tokviz .tk-content { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; }
+    #tokviz .tk-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    #tokviz .tk-brand { display: flex; align-items: center; gap: 8px; }
+    #tokviz .tk-enc { display: flex; align-items: center; gap: 8px; }
+    #tokviz .tk-enc .form-label { margin: 0; color: #93a19a; }
     #tokviz .tk-head h3 { margin: 0; color: #f2f7f4; }
     #tokviz .form-label { color: #e7ece9; }
     #tokviz .text-muted { color: #93a19a; }
-    #tokviz .tok-chips { display: flex; flex-wrap: wrap; gap: 2px; align-items: flex-start; }
+    #tokviz .tok-chips { display: flex; flex-wrap: wrap; gap: 2px; align-items: flex-start; min-height: 30px; }
     #tokviz .tok-chip {
       font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
       padding: 1px 5px; border-radius: 6px; white-space: pre; word-break: break-all;
@@ -81,32 +84,38 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
     #tokviz .tk-ws    { background: rgba(233, 255, 240, 0.10); color: #97a69e; }
     #tokviz .tk-byte  { background: rgba(224, 102, 96, 0.30); color: #f6dedb; }
     #tokviz .tok-stat b { font-weight: 500; color: #f2f7f4; }
+    #tokviz .st-unit { color: #93a19a; font-style: normal; margin-left: 4px; }
+    #tokviz .tk-legend > span { color: #93a19a; }
     #tokviz .tok-empty { color: #93a19a; }
     #tokviz .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
   </style>
 
   <div class="tk-content">
     <div class="tk-head">
-      <i data-lucide="scissors" aria-hidden="true"></i>
-      <h3>Token</h3>
+      <span class="tk-brand">
+        <i data-lucide="scissors" aria-hidden="true"></i>
+        <h3>Token</h3>
+      </span>
+      <span class="tk-enc">
+        <label class="form-label" for="tk-enc">词表</label>
+        <select id="tk-enc" class="form-select" style="width:auto">
+          <optgroup label="GPT 系列真实词表">
+            <option value="o200k">o200k_base · GPT-4o</option>
+            <option value="o200k_harmony">o200k_harmony · GPT-5 / gpt-oss</option>
+            <option value="cl100k">cl100k_base · GPT-4 / 3.5</option>
+            <option value="p50k">p50k_base · GPT-3.5 / Codex</option>
+            <option value="r50k">r50k_base · GPT-2 / GPT-3</option>
+          </optgroup>
+          <optgroup label="本地基线（无需联网）">
+            <option value="char">字符级 · 每字符 1 Token</option>
+            <option value="utf8">UTF-8 字节 · 每字节 1 Token</option>
+          </optgroup>
+        </select>
+      </span>
     </div>
 
-    <div class="viz-controls">
-      <label class="form-label" for="tk-enc">词表</label>
-      <select id="tk-enc" class="form-select" style="width:auto">
-        <optgroup label="GPT 系列真实词表">
-          <option value="o200k">o200k_base · GPT-4o</option>
-          <option value="o200k_harmony">o200k_harmony · GPT-5 / gpt-oss</option>
-          <option value="cl100k">cl100k_base · GPT-4 / 3.5</option>
-          <option value="p50k">p50k_base · GPT-3.5 / Codex</option>
-          <option value="r50k">r50k_base · GPT-2 / GPT-3</option>
-        </optgroup>
-        <optgroup label="本地基线（无需联网）">
-          <option value="char">字符级 · 每字符 1 Token</option>
-          <option value="utf8">UTF-8 字节 · 每字节 1 Token</option>
-        </optgroup>
-      </select>
-      <span class="text-muted" style="align-self:center">示例：</span>
+    <div class="viz-controls tk-presets">
+      <span class="text-muted">示例</span>
       <button type="button" class="btn btn-sm" data-preset="zh">中文</button>
       <button type="button" class="btn btn-sm" data-preset="en">English</button>
       <button type="button" class="btn btn-sm" data-preset="mix">混合 · Emoji</button>
@@ -120,16 +129,16 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
     </div>
 
     <div class="viz-row tok-stat" aria-live="polite">
-      <span><b class="tabular-nums" id="st-tokens">0</b> Tokens</span>
-      <span><b class="tabular-nums" id="st-chars">0</b> 字符</span>
-      <span><b class="tabular-nums" id="st-bytes">0</b> 字节</span>
-      <span><b class="tabular-nums" id="st-ratio">–</b> 字符/Token</span>
+      <span><b class="tabular-nums" id="st-tokens">0</b><span class="st-unit">Tokens</span></span>
+      <span><b class="tabular-nums" id="st-chars">0</b><span class="st-unit">字符</span></span>
+      <span><b class="tabular-nums" id="st-bytes">0</b><span class="st-unit">字节</span></span>
+      <span><b class="tabular-nums" id="st-ratio">–</b><span class="st-unit">字符/Token</span></span>
       <span class="viz-badge" id="st-mode">加载词表…</span>
     </div>
 
     <div id="tk-chips" class="tok-chips" role="list" aria-label="Token 划分结果"></div>
 
-    <div class="viz-row text-small" style="gap:14px">
+    <div class="viz-row text-small tk-legend" style="gap:14px">
       <span><span class="sw tk-word"></span>单词 / 字母</span>
       <span><span class="sw tk-cjk"></span>汉字 / 日韩文</span>
       <span><span class="sw tk-num"></span>数字</span>
@@ -645,6 +654,11 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
     position: relative; z-index: 1;
   }
   #tokviz h3 { font-size: 24px; letter-spacing: 0.5px; }
+  #tokviz .tok-stat { gap: 20px; margin-top: 2px; }
+  #tokviz .tok-stat b { font-size: 20px; }
+  #tokviz .tok-stat .st-unit { font-size: 12px; }
+  #tokviz .tk-legend { gap: 16px; }
+  #tokviz textarea.form-control { min-height: 88px; }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
