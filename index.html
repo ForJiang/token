@@ -32,11 +32,11 @@
   #tokviz .btn:hover { border-color: #4e4e52; }
   #tokviz .btn-sm { padding: 0 10px; }
   .viz-controls, .viz-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  .viz-badge { border-radius: 99px; padding: 2px 10px; background: rgba(20, 27, 23, 0.85); color: #9fb0a7; font-size: 12px; }
-  .text-muted { color: #93a19a; }
+  .viz-badge { border-radius: 99px; padding: 2px 10px; background: rgba(36, 36, 38, 0.82); color: #a0a0a5; font-size: 12px; border: 1px solid #363638; }
+  .text-muted { color: #a0a0a5; }
   .text-small { font-size: 12px; }
   .tabular-nums { font-variant-numeric: tabular-nums; }
-  .tk-foot { margin: 0 auto 18px; color: #5f6b64; font-size: 12px; text-align: center; }
+  .tk-foot { margin: 0 auto 18px; color: #6e6e73; font-size: 12px; text-align: center; }
 </style>
 </head>
 <body>
@@ -126,21 +126,21 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       #tokviz .tok-chip .tk-txt { opacity: 1 !important; animation: none !important; }
     }
     #tokviz .tok-stat b { font-weight: 500; color: #f2f7f4; }
-    #tokviz .st-unit { color: #93a19a; font-style: normal; margin-left: 4px; }
-    #tokviz .tk-legend > span { color: #93a19a; }
-    #tokviz .tok-empty { color: #93a19a; }
+    #tokviz .st-unit { color: #a0a0a5; font-style: normal; margin-left: 4px; }
+    #tokviz .tk-legend > span { color: #a0a0a5; }
+    #tokviz .tok-empty { color: #a0a0a5; }
     #tokviz .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
     #tokviz [hidden] { display: none !important; }
     #tokviz .tk-rel-toggle {
-      margin-left: auto; border: 1px solid #2c3831; background: rgba(255, 255, 255, 0.06);
+      margin-left: auto; border: 1px solid #363638; background: rgba(36, 36, 38, 0.82);
       color: #dfe7e2; font: inherit; font-size: 12px; font-weight: 600;
       padding: 4px 12px; border-radius: 999px; cursor: pointer;
       display: inline-flex; align-items: center; gap: 6px; transition: border-color .15s, background-color .15s, color .15s;
     }
-    #tokviz .tk-rel-toggle:hover { border-color: #46574d; background: rgba(255, 255, 255, 0.11); }
+    #tokviz .tk-rel-toggle:hover { border-color: #4e4e52; background: rgba(48, 48, 52, 0.9); }
     #tokviz .tk-rel-toggle.tk-on { background: rgba(217, 119, 87, 0.20); border-color: rgba(217, 119, 87, 0.68); color: #f6ded5; }
     #tokviz .tk-rel-panel {
-      background: rgba(13, 18, 16, 0.86); border: 1px solid #26302a; border-radius: 12px;
+      background: rgba(26, 26, 28, 0.92); border: 1px solid #363638; border-radius: 12px;
       padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;
     }
     #tokviz .tk-rel-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
@@ -149,33 +149,42 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       border-radius: 999px; background: rgba(255, 255, 255, 0.06);
     }
     #tokviz .tk-rel-tabs button, #tokviz .tk-rel-sub button {
-      border: none; background: transparent; color: #93a19a; font: inherit; font-size: 12px; font-weight: 600;
+      border: none; background: transparent; color: #a0a0a5; font: inherit; font-size: 12px; font-weight: 600;
       padding: 3px 10px; border-radius: 999px; cursor: pointer; white-space: nowrap;
     }
     #tokviz .tk-rel-tabs button.tk-on, #tokviz .tk-rel-sub button.tk-on { background: #e7ece9; color: #0a0c0b; cursor: default; }
     #tokviz .tk-rel-note { font-size: 11px; color: #c79a86; background: rgba(217, 119, 87, 0.12); border: 1px solid rgba(217, 119, 87, 0.30); border-radius: 999px; padding: 2px 9px; }
     #tokviz .tk-rel-scroll { overflow-x: auto; padding-bottom: 4px; }
     #tokviz .tk-rel-svg { display: block; min-width: 100%; height: auto; }
-    #tokviz .tk-rel-grid { display: grid; gap: 2px; font-family: ui-monospace, Menlo, monospace; font-size: 11px; align-items: center; }
-    #tokviz .tk-rel-hdr { color: #93a19a; padding: 2px 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 48px; cursor: pointer; border-radius: 4px; }
-    #tokviz .tk-rel-hdr.tk-on { color: #f2f7f4; background: rgba(217, 119, 87, 0.25); }
+    #tokviz .tk-rel-grid {
+      display: grid; gap: 2px; font-family: ui-monospace, Menlo, monospace; font-size: 11px; align-items: center;
+      background: rgba(18, 18, 20, 0.72); padding: 8px; border-radius: 8px; border: 1px solid #363638;
+    }
+    #tokviz .tk-rel-hdr {
+      color: #a0a0a5; background: rgba(36, 36, 38, 0.75); border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 2px 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 48px;
+      cursor: pointer; border-radius: 4px;
+    }
+    #tokviz .tk-rel-hdr:hover { color: #f2f7f4; border-color: #525256; }
+    #tokviz .tk-rel-hdr.tk-on { color: #f2f7f4; background: rgba(217, 119, 87, 0.28); border-color: rgba(217, 119, 87, 0.65); }
     #tokviz .tk-rel-cell {
-      height: 22px; min-width: 22px; border-radius: 3px; border: 1px solid rgba(255, 255, 255, 0.04);
+      height: 22px; min-width: 22px; border-radius: 3px; border: 1px solid #363638;
       display: flex; align-items: center; justify-content: center; font-size: 10px; color: rgba(242, 247, 244, 0.86);
       cursor: pointer; user-select: none;
+      background: rgba(36, 36, 38, 0.65);
     }
-    #tokviz .tk-rel-cell.tk-mask { background: rgba(255, 255, 255, 0.02); border-color: transparent; cursor: default; color: transparent; }
+    #tokviz .tk-rel-cell.tk-mask { background: rgba(20, 20, 22, 0.5); border-color: rgba(255, 255, 255, 0.02); cursor: default; color: transparent; }
     #tokviz .tk-rel-cell.tk-hi { outline: 1px solid rgba(217, 119, 87, 0.9); }
     #tokviz .tk-rel-split { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 12px; }
     @media (max-width: 720px) { #tokviz .tk-rel-split { grid-template-columns: 1fr; } }
     #tokviz .tk-rel-list { display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
     #tokviz .tk-rel-edge {
       display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px;
-      border-radius: 7px; background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; cursor: pointer;
+      border-radius: 7px; background: rgba(36, 36, 38, 0.65); border: 1px solid #363638; cursor: pointer;
       font-family: ui-monospace, Menlo, monospace; color: #dfe7e2;
     }
-    #tokviz .tk-rel-edge:hover { border-color: rgba(217, 119, 87, 0.55); }
-    #tokviz .tk-rel-info { font-size: 12px; color: #9fb0a7; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 8px; }
+    #tokviz .tk-rel-edge:hover { border-color: rgba(217, 119, 87, 0.65); background: rgba(48, 48, 52, 0.85); }
+    #tokviz .tk-rel-info { font-size: 12px; color: #a0a0a5; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; border-top: 1px solid #363638; padding-top: 8px; }
   </style>
 
   <div class="tk-content">
@@ -1101,7 +1110,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
               var adjLine = document.createElementNS(SVG_NS, 'path');
               adjLine.setAttribute('d', 'M ' + sx1 + ' ' + baseY + ' Q ' + ((sx1 + sx2) / 2) + ' ' + (baseY - 24) + ' ' + sx2 + ' ' + baseY);
               adjLine.setAttribute('fill', 'none');
-              adjLine.setAttribute('stroke', (sIdx === focus || sIdx + 1 === focus) ? '#d97757' : '#58695f');
+              adjLine.setAttribute('stroke', (sIdx === focus || sIdx + 1 === focus) ? '#d97757' : '#525256');
               adjLine.setAttribute('stroke-opacity', (sIdx === focus || sIdx + 1 === focus) ? '0.9' : '0.45');
               adjLine.setAttribute('stroke-width', (sIdx === focus || sIdx + 1 === focus) ? '2' : '1.2');
               svg.appendChild(adjLine);
@@ -1138,14 +1147,14 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
             circ.setAttribute('cx', String(cx));
             circ.setAttribute('cy', String(baseY + 4));
             circ.setAttribute('r', ni === focus ? '6' : '4.2');
-            circ.setAttribute('fill', ni === focus ? '#d97757' : (TYPE_COLORS[ch.type] || '#9fb0a7'));
+            circ.setAttribute('fill', ni === focus ? '#d97757' : (TYPE_COLORS[ch.type] || '#9e9ea3'));
             circ.setAttribute('stroke', ni === focus ? '#f2f7f4' : 'none');
             circ.setAttribute('stroke-width', '1.4');
             var lbl = document.createElementNS(SVG_NS, 'text');
             lbl.setAttribute('x', String(cx));
             lbl.setAttribute('y', String(baseY + 24));
             lbl.setAttribute('text-anchor', 'middle');
-            lbl.setAttribute('fill', ni === focus ? '#f2f7f4' : '#9fb0a7');
+            lbl.setAttribute('fill', ni === focus ? '#f2f7f4' : '#9e9ea3');
             lbl.setAttribute('font-size', '11');
             lbl.setAttribute('font-family', 'ui-monospace, Menlo, monospace');
             var txtStr = displayText(ch.text);
@@ -1552,8 +1561,8 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
 (function () {
   var tip = document.createElement('div');
   tip.setAttribute('role', 'tooltip');
-  tip.style.cssText = 'position:fixed;z-index:99;pointer-events:none;background:#151b18;color:#e7ece9;' +
-    'border:1px solid #2c352f;border-radius:8px;padding:5px 10px;font-size:12px;font-family:ui-monospace,Menlo,monospace;' +
+  tip.style.cssText = 'position:fixed;z-index:99;pointer-events:none;background:rgba(26,26,28,0.95);color:#e7ece9;' +
+    'border:1px solid #363638;border-radius:8px;padding:5px 10px;font-size:12px;font-family:ui-monospace,Menlo,monospace;' +
     'opacity:0;transition:opacity .12s;white-space:nowrap;';
   document.body.appendChild(tip);
   var cur = null;
