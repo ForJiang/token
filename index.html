@@ -17,26 +17,25 @@
   }
   .form-label { display: block; margin-bottom: 6px; }
   #tokviz textarea.form-control, #tokviz select.form-select {
-    font: inherit; color: #e7ece9; background: rgba(16, 22, 19, 0.82);
-    border: 1px solid #26302a; border-radius: 8px; padding: 7px 10px;
+    font: inherit; color: #e7ece9; background: rgba(36, 36, 38, 0.82);
+    border: 1px solid #363638; border-radius: 8px; padding: 7px 10px;
   }
   #tokviz select.form-select { height: 32px; padding: 0 10px; }
   #tokviz textarea.form-control { width: 100%; resize: vertical; }
-  #tokviz textarea.form-control:focus, #tokviz select.form-select:focus { outline: 1px solid #3d4a42; }
+  #tokviz textarea.form-control:focus, #tokviz select.form-select:focus { outline: 1px solid #525256; }
   #tokviz .btn {
-    font: inherit; color: #dfe7e2; background: rgba(16, 22, 19, 0.82);
-    border: 1px solid #26302a; border-radius: 8px;
+    font: inherit; color: #dfe7e2; background: rgba(36, 36, 38, 0.82);
+    border: 1px solid #363638; border-radius: 8px;
     height: 32px; padding: 0 12px; cursor: pointer;
     display: inline-flex; align-items: center;
   }
-  #tokviz .btn:hover { border-color: #3a463f; }
+  #tokviz .btn:hover { border-color: #4e4e52; }
   #tokviz .btn-sm { padding: 0 10px; }
   .viz-controls, .viz-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .viz-badge { border-radius: 99px; padding: 2px 10px; background: rgba(20, 27, 23, 0.85); color: #9fb0a7; font-size: 12px; }
   .text-muted { color: #93a19a; }
   .text-small { font-size: 12px; }
   .tabular-nums { font-variant-numeric: tabular-nums; }
-  #tokviz [data-lucide] { display: inline-block; width: 16px; height: 16px; }
   .tk-foot { margin: 0 auto 18px; color: #5f6b64; font-size: 12px; text-align: center; }
 </style>
 </head>
@@ -95,6 +94,9 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       border: 1px solid transparent;
     }
     #tokviz .tok-chip:hover { border-color: rgba(233, 255, 240, 0.38); }
+    #tokviz .tok-chip.tk-focus { border-color: #d97757; box-shadow: 0 0 0 1px rgba(217, 119, 87, 0.55); }
+    #tokviz .tok-chip.tk-peer { border-color: rgba(231, 236, 233, 0.52); }
+    #tokviz .tok-chip.tk-dim { opacity: 0.44; }
     #tokviz .tk-word  { background: rgba(96, 150, 224, 0.26); --blk: rgba(96, 150, 224, 0.62); }
     #tokviz .tk-cjk   { background: rgba(177, 122, 216, 0.30); --blk: rgba(177, 122, 216, 0.66); }
     #tokviz .tk-num   { background: rgba(110, 205, 160, 0.26); --blk: rgba(110, 205, 160, 0.62); }
@@ -128,6 +130,52 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
     #tokviz .tk-legend > span { color: #93a19a; }
     #tokviz .tok-empty { color: #93a19a; }
     #tokviz .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
+    #tokviz [hidden] { display: none !important; }
+    #tokviz .tk-rel-toggle {
+      margin-left: auto; border: 1px solid #2c3831; background: rgba(255, 255, 255, 0.06);
+      color: #dfe7e2; font: inherit; font-size: 12px; font-weight: 600;
+      padding: 4px 12px; border-radius: 999px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px; transition: border-color .15s, background-color .15s, color .15s;
+    }
+    #tokviz .tk-rel-toggle:hover { border-color: #46574d; background: rgba(255, 255, 255, 0.11); }
+    #tokviz .tk-rel-toggle.tk-on { background: rgba(217, 119, 87, 0.20); border-color: rgba(217, 119, 87, 0.68); color: #f6ded5; }
+    #tokviz .tk-rel-panel {
+      background: rgba(13, 18, 16, 0.86); border: 1px solid #26302a; border-radius: 12px;
+      padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;
+    }
+    #tokviz .tk-rel-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+    #tokviz .tk-rel-tabs, #tokviz .tk-rel-sub {
+      display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px; padding: 3px;
+      border-radius: 999px; background: rgba(255, 255, 255, 0.06);
+    }
+    #tokviz .tk-rel-tabs button, #tokviz .tk-rel-sub button {
+      border: none; background: transparent; color: #93a19a; font: inherit; font-size: 12px; font-weight: 600;
+      padding: 3px 10px; border-radius: 999px; cursor: pointer; white-space: nowrap;
+    }
+    #tokviz .tk-rel-tabs button.tk-on, #tokviz .tk-rel-sub button.tk-on { background: #e7ece9; color: #0a0c0b; cursor: default; }
+    #tokviz .tk-rel-note { font-size: 11px; color: #c79a86; background: rgba(217, 119, 87, 0.12); border: 1px solid rgba(217, 119, 87, 0.30); border-radius: 999px; padding: 2px 9px; }
+    #tokviz .tk-rel-scroll { overflow-x: auto; padding-bottom: 4px; }
+    #tokviz .tk-rel-svg { display: block; min-width: 100%; height: auto; }
+    #tokviz .tk-rel-grid { display: grid; gap: 2px; font-family: ui-monospace, Menlo, monospace; font-size: 11px; align-items: center; }
+    #tokviz .tk-rel-hdr { color: #93a19a; padding: 2px 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 48px; cursor: pointer; border-radius: 4px; }
+    #tokviz .tk-rel-hdr.tk-on { color: #f2f7f4; background: rgba(217, 119, 87, 0.25); }
+    #tokviz .tk-rel-cell {
+      height: 22px; min-width: 22px; border-radius: 3px; border: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex; align-items: center; justify-content: center; font-size: 10px; color: rgba(242, 247, 244, 0.86);
+      cursor: pointer; user-select: none;
+    }
+    #tokviz .tk-rel-cell.tk-mask { background: rgba(255, 255, 255, 0.02); border-color: transparent; cursor: default; color: transparent; }
+    #tokviz .tk-rel-cell.tk-hi { outline: 1px solid rgba(217, 119, 87, 0.9); }
+    #tokviz .tk-rel-split { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 12px; }
+    @media (max-width: 720px) { #tokviz .tk-rel-split { grid-template-columns: 1fr; } }
+    #tokviz .tk-rel-list { display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
+    #tokviz .tk-rel-edge {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px;
+      border-radius: 7px; background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; cursor: pointer;
+      font-family: ui-monospace, Menlo, monospace; color: #dfe7e2;
+    }
+    #tokviz .tk-rel-edge:hover { border-color: rgba(217, 119, 87, 0.55); }
+    #tokviz .tk-rel-info { font-size: 12px; color: #9fb0a7; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 8px; }
   </style>
 
   <div class="tk-content">
@@ -145,16 +193,16 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         <span class="tk-enc">
           <label class="form-label" for="tk-enc" data-i18n="vocab">词表</label>
           <select id="tk-enc" class="form-select" style="width:auto">
-          <optgroup id="og-real" label="GPT 系列真实词表">
+          <optgroup id="og-real" label="GPT 系列真实词表" data-i18n-label="og_real">
             <option value="o200k">o200k_base · GPT-4o</option>
             <option value="o200k_harmony">o200k_harmony · GPT-5 / gpt-oss</option>
             <option value="cl100k">cl100k_base · GPT-4 / 3.5</option>
             <option value="p50k">p50k_base · GPT-3.5 / Codex</option>
             <option value="r50k">r50k_base · GPT-2 / GPT-3</option>
           </optgroup>
-          <optgroup id="og-local" label="本地基线（无需联网）">
-            <option value="char">字符级 · 每字符 1 Token</option>
-            <option value="utf8">UTF-8 字节 · 每字节 1 Token</option>
+          <optgroup id="og-local" label="本地基线（无需联网）" data-i18n-label="og_local">
+            <option value="char" data-i18n="opt_char">字符级 · 每字符 1 Token</option>
+            <option value="utf8" data-i18n="opt_utf8">UTF-8 字节 · 每字节 1 Token</option>
           </optgroup>
         </select>
         </span>
@@ -182,9 +230,32 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       <span><b class="tabular-nums" id="st-bytes">0</b><span class="st-unit" data-i18n="unit_bytes">字节</span></span>
       <span><b class="tabular-nums" id="st-ratio">–</b><span class="st-unit" data-i18n="unit_ratio">字符/Token</span></span>
       <span class="viz-badge" id="st-mode">加载词表…</span>
+      <button type="button" id="tk-rel-btn" class="tk-rel-toggle" aria-expanded="false" aria-controls="tk-rel-panel" data-i18n="rel_toggle">关系图谱</button>
     </div>
 
-    <div id="tk-chips" class="tok-chips" role="list" aria-label="Token 划分结果"></div>
+    <div id="tk-chips" class="tok-chips" role="list" aria-label="Token 划分结果" data-i18n-aria="chips_aria"></div>
+
+    <section id="tk-rel-panel" class="tk-rel-panel" hidden aria-label="Token 关系视图" data-i18n-aria="rel_panel_aria">
+      <div class="tk-rel-bar">
+        <div class="tk-rel-tabs" role="tablist">
+          <button type="button" role="tab" data-rel-tab="arc" class="tk-on" data-i18n="rel_tab_arc">序列弧线图</button>
+          <button type="button" role="tab" data-rel-tab="attn" data-i18n="rel_tab_attn">Attention 矩阵</button>
+          <button type="button" role="tab" data-rel-tab="adj" data-i18n="rel_tab_adj">转移邻接矩阵</button>
+        </div>
+        <div class="tk-rel-sub" id="tk-rel-arc-opts">
+          <button type="button" data-arc-mode="attn" class="tk-on" data-i18n="rel_arc_attn">Attention 连线</button>
+          <button type="button" data-arc-mode="seq" data-i18n="rel_arc_seq">序列与复现</button>
+        </div>
+        <div class="tk-rel-sub" id="tk-rel-head-opts">
+          <button type="button" data-rel-head="balanced" class="tk-on" data-i18n="rel_head_balanced">综合</button>
+          <button type="button" data-rel-head="local" data-i18n="rel_head_local">局部窗口</button>
+          <button type="button" data-rel-head="struct" data-i18n="rel_head_struct">复现与结构</button>
+        </div>
+        <span class="tk-rel-note" id="tk-rel-note" data-i18n="rel_approx_note">教学近似示意 · 非真实 LLM 权重</span>
+      </div>
+      <div id="tk-rel-body"></div>
+      <div class="tk-rel-info" id="tk-rel-info"></div>
+    </section>
 
     <div class="viz-row text-small tk-legend" style="gap:14px">
       <span><span class="sw tk-word"></span><span data-i18n="legend_word">单词 / 字母</span></span>
@@ -258,10 +329,23 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         if (!swells.length) return;
+        var minI = cols, maxI = -1, minJ = rows, maxJ = -1;
+        for (var k0 = 0; k0 < swells.length; k0++) {
+          var s0 = swells[k0];
+          var rMax = (tDraw - s0.t) * 17 + 7;
+          if (rMax < 0) continue;
+          minI = Math.min(minI, Math.floor(s0.x - rMax));
+          maxI = Math.max(maxI, Math.ceil(s0.x + rMax));
+          minJ = Math.min(minJ, Math.floor(s0.y - rMax));
+          maxJ = Math.max(maxJ, Math.ceil(s0.y + rMax));
+        }
+        minI = Math.max(0, minI); maxI = Math.min(cols - 1, maxI);
+        minJ = Math.max(0, minJ); maxJ = Math.min(rows - 1, maxJ);
+        if (minI > maxI || minJ > maxJ) return;
         var ox = ((W - (cols - 1) * size) / 2) * dpr;
         var oy = ((H - (rows - 1) * size) / 2) * dpr;
-        for (var j = 0; j < rows; j++) {
-          for (var i = 0; i < cols; i++) {
+        for (var j = minJ; j <= maxJ; j++) {
+          for (var i = minI; i <= maxI; i++) {
             var v = 0;
             for (var k = 0; k < swells.length; k++) {
               var s = swells[k];
@@ -376,6 +460,9 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       var I18N = {
         'zh-CN': {
           vocab: '词表', examples: '示例',
+          og_real: 'GPT 系列真实词表', og_local: '本地基线（无需联网）',
+          opt_char: '字符级 · 每字符 1 Token', opt_utf8: 'UTF-8 字节 · 每字节 1 Token',
+          chips_aria: 'Token 划分结果',
           preset_en: '英文', preset_langs: '多语言', preset_code: '代码', preset_emoji: 'Emoji', preset_b64: 'Base64',
           tip_en: 'K&R 经典写法', tip_langs: '五种语言说 Hello World', tip_code: 'Python 类 + f-string + 主入口',
           tip_emoji: 'Emoji 混排', tip_b64: 'Base64 编码的 Hello World!',
@@ -390,10 +477,22 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
           legend_word: '单词 / 字母', legend_cjk: '汉字 / 日韩文', legend_num: '数字',
           legend_punct: '标点 / 符号', legend_ws: '空白', legend_byte: '字节（不完整 UTF-8）',
           tip_byte_word: '字节', tip_codepoint: '码点', tip_approx: '近似切分',
+          rel_toggle: '关系图谱', rel_panel_aria: 'Token 关系视图',
+          rel_tab_arc: '序列弧线图', rel_tab_attn: 'Attention 矩阵', rel_tab_adj: '转移邻接矩阵',
+          rel_arc_attn: 'Attention 连线', rel_arc_seq: '序列与复现',
+          rel_head_balanced: '综合', rel_head_local: '局部窗口', rel_head_struct: '复现与结构',
+          rel_approx_note: '教学近似示意 · 非真实 LLM 权重',
+          rel_empty: '至少需要 2 个 Token 才能展示关系',
+          rel_trunc: function (shown, total) { return '仅展示前 ' + shown + ' / ' + total + ' 个 Token 的连线与矩阵'; },
+          rel_top_edges: '高频相邻转移 (Bigram)', rel_repeats: '同 Token 复现', rel_no_repeats: '当前无重复 Token',
+          rel_hint_lock: '悬停色块或节点预览关系 · 点击可锁定焦点', rel_locked: '已锁定',
           overflow: function (shown, total) { return '… 仅显示前 ' + shown + ' 个，共 ' + total + ' 个'; }
         },
         'zh-TW': {
           vocab: '詞表', examples: '範例',
+          og_real: 'GPT 系列真實詞表', og_local: '本地基線（無需聯網）',
+          opt_char: '字元級 · 每字元 1 Token', opt_utf8: 'UTF-8 位元組 · 每位元組 1 Token',
+          chips_aria: 'Token 切分結果',
           preset_en: '英文', preset_langs: '多語言', preset_code: '程式碼', preset_emoji: 'Emoji', preset_b64: 'Base64',
           tip_en: 'K&R 經典寫法', tip_langs: '五種語言說 Hello World', tip_code: 'Python 類別 + f-string + 進入點',
           tip_emoji: 'Emoji 混排', tip_b64: 'Base64 編碼的 Hello World!',
@@ -408,10 +507,22 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
           legend_word: '單詞 / 字母', legend_cjk: '漢字 / 日韓文', legend_num: '數字',
           legend_punct: '標點 / 符號', legend_ws: '空白', legend_byte: '位元組（不完整 UTF-8）',
           tip_byte_word: '位元組', tip_codepoint: '碼點', tip_approx: '近似切分',
+          rel_toggle: '關係圖譜', rel_panel_aria: 'Token 關係檢視',
+          rel_tab_arc: '序列弧線圖', rel_tab_attn: 'Attention 矩陣', rel_tab_adj: '轉移鄰接矩陣',
+          rel_arc_attn: 'Attention 連線', rel_arc_seq: '序列與復現',
+          rel_head_balanced: '綜合', rel_head_local: '局部視窗', rel_head_struct: '復現與結構',
+          rel_approx_note: '教學近似示意 · 非真實 LLM 權重',
+          rel_empty: '至少需要 2 個 Token 才能顯示關係',
+          rel_trunc: function (shown, total) { return '僅顯示前 ' + shown + ' / ' + total + ' 個 Token 的連線與矩陣'; },
+          rel_top_edges: '高頻相鄰轉移 (Bigram)', rel_repeats: '同 Token 復現', rel_no_repeats: '目前無重複 Token',
+          rel_hint_lock: '懸停色塊或節點預覽關係 · 點擊可鎖定焦點', rel_locked: '已鎖定',
           overflow: function (shown, total) { return '… 僅顯示前 ' + shown + ' 個，共 ' + total + ' 個'; }
         },
         'en': {
           vocab: 'Vocab', examples: 'Examples',
+          og_real: 'GPT official vocabs', og_local: 'Local baselines (offline)',
+          opt_char: 'Character-level · 1 token/char', opt_utf8: 'UTF-8 bytes · 1 token/byte',
+          chips_aria: 'Tokenized output',
           preset_en: 'English', preset_langs: 'Multilingual', preset_code: 'Code', preset_emoji: 'Emoji', preset_b64: 'Base64',
           tip_en: 'The classic K&R greeting', tip_langs: 'Hello World in five languages', tip_code: 'Python class + f-string + entry point',
           tip_emoji: 'Mixed with emoji', tip_b64: 'Hello World! in Base64',
@@ -426,10 +537,22 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
           legend_word: 'Word / letters', legend_cjk: 'CJK / kana', legend_num: 'Digits',
           legend_punct: 'Punct / symbols', legend_ws: 'Whitespace', legend_byte: 'Bytes (partial UTF-8)',
           tip_byte_word: 'bytes', tip_codepoint: 'code point', tip_approx: 'approximate',
+          rel_toggle: 'Relations', rel_panel_aria: 'Token relations panel',
+          rel_tab_arc: 'Arc Diagram', rel_tab_attn: 'Attention Matrix', rel_tab_adj: 'Transition Matrix',
+          rel_arc_attn: 'Attention Arcs', rel_arc_seq: 'Sequence & Repeat',
+          rel_head_balanced: 'Balanced', rel_head_local: 'Local', rel_head_struct: 'Copy & Syntax',
+          rel_approx_note: 'Heuristic approximation · not real LLM weights',
+          rel_empty: 'Enter at least 2 tokens to inspect relations',
+          rel_trunc: function (shown, total) { return 'Showing first ' + shown + ' of ' + total + ' tokens in arcs/matrix'; },
+          rel_top_edges: 'Top Adjacent Transitions', rel_repeats: 'Repeated Tokens', rel_no_repeats: 'No repeated tokens',
+          rel_hint_lock: 'Hover chips or nodes to inspect · Click to pin focus', rel_locked: 'Pinned',
           overflow: function (shown, total) { return '… showing first ' + shown + ' of ' + total; }
         },
         'ja': {
           vocab: '語彙', examples: '例',
+          og_real: 'GPT 公式語彙', og_local: 'ローカル基準（オフライン可）',
+          opt_char: '文字レベル · 1文字 = 1トークン', opt_utf8: 'UTF-8 バイト · 1バイト = 1トークン',
+          chips_aria: 'トークン分割結果',
           preset_en: '英語', preset_langs: '多言語', preset_code: 'コード', preset_emoji: 'Emoji', preset_b64: 'Base64',
           tip_en: 'K&R の定番', tip_langs: '5言語の Hello World', tip_code: 'Python クラス + f-string + エントリーポイント',
           tip_emoji: '絵文字ミックス', tip_b64: 'Base64 エンコードされた Hello World!',
@@ -444,6 +567,15 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
           legend_word: '単語 / アルファベット', legend_cjk: '漢字 / かな・ハングル', legend_num: '数字',
           legend_punct: '句読点 / 記号', legend_ws: '空白', legend_byte: 'バイト（不完全なUTF-8）',
           tip_byte_word: 'バイト', tip_codepoint: '符号位置', tip_approx: '近似分割',
+          rel_toggle: '関係グラフ', rel_panel_aria: 'トークン関係パネル',
+          rel_tab_arc: 'アーク図', rel_tab_attn: 'Attention 行列', rel_tab_adj: '遷移隣接行列',
+          rel_arc_attn: 'Attention 線', rel_arc_seq: '遷移・反復',
+          rel_head_balanced: '総合', rel_head_local: '局所', rel_head_struct: '反復・構文',
+          rel_approx_note: '教育用近似表示 · 実LLM重みではありません',
+          rel_empty: '関係を表示するには2つ以上のトークンが必要です',
+          rel_trunc: function (shown, total) { return '最初の ' + shown + ' / ' + total + ' トークンを表示中'; },
+          rel_top_edges: '高頻度隣接遷移', rel_repeats: '同一トークン反復', rel_no_repeats: '重複トークンなし',
+          rel_hint_lock: 'ホバーで関係表示・クリックで固定', rel_locked: '固定中',
           overflow: function (shown, total) { return '… 最初の ' + shown + ' 件のみ表示（全 ' + total + ' 件）'; }
         }
       };
@@ -462,6 +594,8 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         qsa('[data-i18n]').forEach(function (el) { var v = d[el.getAttribute('data-i18n')]; if (v != null) el.textContent = v; });
         qsa('[data-i18n-tip]').forEach(function (el) { var v = d[el.getAttribute('data-i18n-tip')]; if (v != null) el.setAttribute('data-tooltip', v); });
         qsa('[data-i18n-ph]').forEach(function (el) { var v = d[el.getAttribute('data-i18n-ph')]; if (v != null) el.setAttribute('placeholder', v); });
+        qsa('[data-i18n-label]').forEach(function (el) { var v = d[el.getAttribute('data-i18n-label')]; if (v != null) el.setAttribute('label', v); });
+        qsa('[data-i18n-aria]').forEach(function (el) { var v = d[el.getAttribute('data-i18n-aria')]; if (v != null) el.setAttribute('aria-label', v); });
         qsa('#tokviz .tk-lang button').forEach(function (b) {
           var on = b.getAttribute('data-lang') === lang;
           b.classList.toggle('tk-on', on);
@@ -484,16 +618,41 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
                'https://cdn.jsdelivr.net/npm/gpt-tokenizer@4/encoding/r50k_base/+esm']
       };
       var ALL_ENC = ['o200k', 'o200k_harmony', 'cl100k', 'p50k', 'r50k', 'char', 'utf8'];
+      var CDN_TIMEOUT_MS = 5000;
       var mods = {}, mod = null, modEnc = null;
 
-      function ensureModule(enc) {
-        if (mods[enc]) { mod = mods[enc]; modEnc = enc; return Promise.resolve(true); }
+      function importWithTimeout(url, timeoutMs, loadFn) {
+        var timer;
+        var loader = (loadFn || function (u) { return import(u); })(url).then(function (m) {
+          clearTimeout(timer);
+          return m;
+        }, function (err) {
+          clearTimeout(timer);
+          throw err;
+        });
+        var timeout = new Promise(function (_, reject) {
+          timer = setTimeout(function () { reject(new Error('CDN import timeout')); }, timeoutMs);
+        });
+        return Promise.race([loader, timeout]);
+      }
+
+      function ensureModule(enc, timeoutMs, loadFn) {
+        if (mods[enc]) {
+          if (!sel || sel.value === enc) { mod = mods[enc]; modEnc = enc; }
+          return Promise.resolve(true);
+        }
+        var urls = URLS[enc] || [];
+        var ms = timeoutMs == null ? CDN_TIMEOUT_MS : timeoutMs;
         var chain = Promise.resolve(false);
-        URLS[enc].forEach(function (url) {
+        urls.forEach(function (url) {
           chain = chain.then(function (ok) {
             if (ok) return true;
-            return import(url).then(function (m) {
-              if (m && typeof m.encode === 'function') { mods[enc] = m; mod = m; modEnc = enc; return true; }
+            return importWithTimeout(url, ms, loadFn).then(function (m) {
+              if (m && typeof m.encode === 'function') {
+                mods[enc] = m;
+                if (!sel || sel.value === enc) { mod = m; modEnc = enc; }
+                return true;
+              }
               return false;
             }).catch(function () { return false; });
           });
@@ -685,12 +844,465 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         return d || '\u00B7';
       }
 
-      var prevSigs = null;
+      var MAX_ANIM_CHIPS = 250;
+      var MAX_REL_TOKENS = 48;
+      var relBtn = $('tk-rel-btn'), relPanel = $('tk-rel-panel'), relBody = $('tk-rel-body'), relInfo = $('tk-rel-info');
+      var relArcOpts = $('tk-rel-arc-opts'), relHeadOpts = $('tk-rel-head-opts');
+      var relOpen = false, relTab = 'arc', relArcMode = 'attn', relHead = 'balanced';
+      var lastChips = [], hoverIdx = -1, lockedIdx = -1;
+      var prevSigs = null, renderT;
+
+      function tokKey(c) {
+        return c.id != null ? ('id:' + c.id) : ('tx:' + c.text);
+      }
+
+      function computeTransitions(chips) {
+        var edgeMap = {}, freqMap = {}, nodes = [];
+        for (var i = 0; i < chips.length; i++) {
+          var k = tokKey(chips[i]);
+          if (!freqMap[k]) {
+            freqMap[k] = { key: k, label: displayText(chips[i].text), type: chips[i].type, id: chips[i].id, count: 0, indices: [] };
+            nodes.push(freqMap[k]);
+          }
+          freqMap[k].count++;
+          freqMap[k].indices.push(i);
+          if (i < chips.length - 1) {
+            var k2 = tokKey(chips[i + 1]);
+            var ek = k + '\u0002' + k2;
+            if (!edgeMap[ek]) {
+              edgeMap[ek] = {
+                fromKey: k, toKey: k2,
+                fromLabel: displayText(chips[i].text), toLabel: displayText(chips[i + 1].text),
+                count: 0, positions: []
+              };
+            }
+            edgeMap[ek].count++;
+            edgeMap[ek].positions.push([i, i + 1]);
+          }
+        }
+        var edges = Object.keys(edgeMap).map(function (ek) { return edgeMap[ek]; });
+        edges.sort(function (a, b) { return b.count - a.count; });
+        var repeats = nodes.filter(function (n) { return n.count >= 2; }).sort(function (a, b) { return b.count - a.count; });
+        var topNodes = nodes.slice().sort(function (a, b) { return b.count - a.count; }).slice(0, 16);
+        var nodeIdx = {};
+        topNodes.forEach(function (n, idx) { nodeIdx[n.key] = idx; });
+        var matrix = topNodes.map(function () { return topNodes.map(function () { return 0; }); });
+        var maxCell = 0;
+        edges.forEach(function (e) {
+          var r = nodeIdx[e.fromKey], c = nodeIdx[e.toKey];
+          if (r != null && c != null) {
+            matrix[r][c] = e.count;
+            if (e.count > maxCell) maxCell = e.count;
+          }
+        });
+        return {
+          totalTransitions: Math.max(0, chips.length - 1),
+          edges: edges,
+          topEdges: edges.slice(0, 12),
+          repeats: repeats.slice(0, 10),
+          topNodes: topNodes,
+          matrix: matrix,
+          maxCell: maxCell
+        };
+      }
+
+      var OPEN_PAIRS = { '(': ')', '[': ']', '{': '}', '（': '）', '【': '】', '「': '」' };
+      var CLOSE_PAIRS = { ')': '(', ']': '[', '}': '{', '）': '（', '】': '【', '」': '「' };
+
+      function computeApproxAttention(chips, head) {
+        var n = Math.min(chips.length, MAX_REL_TOKENS);
+        var h = head || 'balanced';
+        var tau = h === 'local' ? 2.6 : (h === 'struct' ? 14 : 7);
+        var matchOf = {};
+        var stack = {};
+        for (var m = 0; m < n; m++) {
+          var trimmed = chips[m].text.replace(/\s+/g, '');
+          if (OPEN_PAIRS[trimmed]) {
+            if (!stack[trimmed]) stack[trimmed] = [];
+            stack[trimmed].push(m);
+          } else if (CLOSE_PAIRS[trimmed]) {
+            var opener = CLOSE_PAIRS[trimmed];
+            if (stack[opener] && stack[opener].length) {
+              matchOf[m] = stack[opener].pop();
+            }
+          } else if (trimmed === '"' || trimmed === "'") {
+            if (!stack[trimmed]) stack[trimmed] = [];
+            if (stack[trimmed].length) matchOf[m] = stack[trimmed].pop();
+            else stack[trimmed].push(m);
+          }
+        }
+        var weights = [];
+        for (var q = 0; q < n; q++) {
+          var row = new Array(n);
+          var scores = new Array(q + 1);
+          var maxS = -Infinity;
+          var qKey = tokKey(chips[q]);
+          for (var k = 0; k < n; k++) {
+            if (k > q) { row[k] = 0; continue; }
+            var dist = q - k;
+            var s = -dist / tau;
+            if (k === q) {
+              s += h === 'local' ? 0.75 : (h === 'struct' ? 0.35 : 0.55);
+            } else {
+              if (k === 0) s += h === 'local' ? 0.3 : (h === 'struct' ? 0.6 : 0.85);
+              if (dist === 1) s += h === 'local' ? 1.5 : (h === 'struct' ? 0.65 : 1.1);
+              if (tokKey(chips[k]) === qKey) s += h === 'local' ? 0.6 : (h === 'struct' ? 2.35 : 1.65);
+              if (matchOf[q] === k) s += h === 'local' ? 0.7 : (h === 'struct' ? 2.7 : 2.2);
+              if (chips[q].type === chips[k].type && chips[k].type !== 'ws') {
+                s += h === 'local' ? 0.2 : (h === 'struct' ? 0.7 : 0.4);
+              }
+              if (chips[k].type === 'ws' && dist > 1) s -= 0.65;
+            }
+            scores[k] = s;
+            if (s > maxS) maxS = s;
+          }
+          var sumExp = 0;
+          for (var k2 = 0; k2 <= q; k2++) {
+            var e = Math.exp(scores[k2] - maxS);
+            row[k2] = e;
+            sumExp += e;
+          }
+          for (var k3 = 0; k3 <= q; k3++) row[k3] /= sumExp;
+          weights.push(row);
+        }
+        return { n: n, truncated: chips.length > MAX_REL_TOKENS, head: h, weights: weights };
+      }
+
+      var TYPE_COLORS = {
+        word: '#6096e0', cjk: '#b17ad8', num: '#6ecda0',
+        punct: '#e09646', ws: '#7f8f87', byte: '#e06660'
+      };
+
+      function activeFocus(n) {
+        var idx = lockedIdx >= 0 && lockedIdx < n ? lockedIdx : (hoverIdx >= 0 && hoverIdx < n ? hoverIdx : n - 1);
+        return n > 0 ? idx : -1;
+      }
+
+      function syncChipHighlights() {
+        var chipEls = chipsEl ? chipsEl.children : [];
+        var n = Math.min(lastChips.length, MAX_REL_TOKENS);
+        var focus = (relOpen && lastChips.length >= 2) ? activeFocus(n) : -1;
+        if (!relOpen || (hoverIdx < 0 && lockedIdx < 0)) {
+          for (var c0 = 0; c0 < chipEls.length; c0++) {
+            if (chipEls[c0].classList) {
+              chipEls[c0].classList.toggle('tk-focus', false);
+              chipEls[c0].classList.toggle('tk-peer', false);
+              chipEls[c0].classList.toggle('tk-dim', false);
+            }
+          }
+          return;
+        }
+        var peers = {};
+        if (focus >= 0) {
+          if (relTab === 'attn' || (relTab === 'arc' && relArcMode === 'attn')) {
+            var attn = computeApproxAttention(lastChips, relHead);
+            var row = attn.weights[focus] || [];
+            for (var k = 0; k <= focus; k++) {
+              if (k !== focus && row[k] >= 0.08) peers[k] = true;
+            }
+          } else {
+            if (focus > 0) peers[focus - 1] = true;
+            if (focus < lastChips.length - 1) peers[focus + 1] = true;
+            var fk = tokKey(lastChips[focus]);
+            for (var j = 0; j < lastChips.length; j++) {
+              if (j !== focus && tokKey(lastChips[j]) === fk) peers[j] = true;
+            }
+          }
+        }
+        for (var i = 0; i < chipEls.length; i++) {
+          var el = chipEls[i];
+          if (!el || !el.classList || !el.hasAttribute || !el.hasAttribute('data-idx')) continue;
+          var idx = Number(el.getAttribute('data-idx'));
+          var isFocus = idx === focus;
+          var isPeer = !!peers[idx];
+          el.classList.toggle('tk-focus', isFocus);
+          el.classList.toggle('tk-peer', !isFocus && isPeer);
+          el.classList.toggle('tk-dim', focus >= 0 && !isFocus && !isPeer);
+        }
+      }
+
+      function updateRelControls() {
+        if (!relBtn || !relPanel) return;
+        relBtn.classList.toggle('tk-on', relOpen);
+        relBtn.setAttribute('aria-expanded', relOpen ? 'true' : 'false');
+        relPanel.hidden = !relOpen;
+        qsa('#tokviz [data-rel-tab]').forEach(function (b) {
+          b.classList.toggle('tk-on', b.getAttribute('data-rel-tab') === relTab);
+        });
+        qsa('#tokviz [data-arc-mode]').forEach(function (b) {
+          b.classList.toggle('tk-on', b.getAttribute('data-arc-mode') === relArcMode);
+        });
+        qsa('#tokviz [data-rel-head]').forEach(function (b) {
+          b.classList.toggle('tk-on', b.getAttribute('data-rel-head') === relHead);
+        });
+        if (relArcOpts) relArcOpts.hidden = relTab !== 'arc';
+        if (relHeadOpts) relHeadOpts.hidden = !(relTab === 'attn' || (relTab === 'arc' && relArcMode === 'attn'));
+      }
+
+      function renderRelations() {
+        updateRelControls();
+        if (!relOpen || !relBody || !relInfo) return;
+        relBody.textContent = '';
+        if (lastChips.length < 2) {
+          var empty = document.createElement('div');
+          empty.className = 'tok-empty';
+          empty.textContent = t('rel_empty');
+          relBody.appendChild(empty);
+          relInfo.textContent = t('rel_hint_lock');
+          syncChipHighlights();
+          return;
+        }
+
+        var trans = computeTransitions(lastChips);
+        var attn = computeApproxAttention(lastChips, relHead);
+        var n = attn.n;
+        var focus = activeFocus(n);
+        var SVG_NS = 'http://www.w3.org/2000/svg';
+
+        if (relTab === 'arc') {
+          var wrap = document.createElement('div');
+          wrap.className = 'tk-rel-scroll';
+          var colW = Math.max(30, Math.min(54, Math.floor(820 / Math.max(1, n))));
+          var svgW = Math.max(360, n * colW + 24);
+          var baseY = 142;
+          var svgH = 180;
+          var svg = document.createElementNS(SVG_NS, 'svg');
+          svg.setAttribute('class', 'tk-rel-svg');
+          svg.setAttribute('viewBox', '0 0 ' + svgW + ' ' + svgH);
+          svg.setAttribute('width', String(svgW));
+          svg.setAttribute('height', String(svgH));
+
+          if (relArcMode === 'attn') {
+            var row = attn.weights[focus] || [];
+            for (var k = 0; k <= focus; k++) {
+              var w = row[k] || 0;
+              if (w < 0.025 && k !== focus) continue;
+              var x1 = 12 + k * colW + colW / 2;
+              var x2 = 12 + focus * colW + colW / 2;
+              var path = document.createElementNS(SVG_NS, 'path');
+              if (k === focus) {
+                path.setAttribute('d', 'M ' + (x2 - 5) + ' ' + baseY + ' C ' + (x2 - 10) + ' ' + (baseY - 26) + ', ' + (x2 + 10) + ' ' + (baseY - 26) + ', ' + (x2 + 5) + ' ' + baseY);
+              } else {
+                var span = Math.abs(x2 - x1);
+                var cy = Math.max(12, baseY - Math.min(126, 22 + span * 0.42));
+                path.setAttribute('d', 'M ' + x1 + ' ' + baseY + ' Q ' + ((x1 + x2) / 2) + ' ' + cy + ' ' + x2 + ' ' + baseY);
+              }
+              path.setAttribute('fill', 'none');
+              path.setAttribute('stroke', '#d97757');
+              path.setAttribute('stroke-opacity', String(Math.min(0.95, 0.16 + w * 1.4).toFixed(2)));
+              path.setAttribute('stroke-width', String((1 + w * 5.5).toFixed(2)));
+              path.setAttribute('data-tooltip', '#' + (focus + 1) + ' ' + displayText(lastChips[focus].text) + ' \u2190 #' + (k + 1) + ' ' + displayText(lastChips[k].text) + ' \u00B7 ' + (w * 100).toFixed(1) + '%');
+              svg.appendChild(path);
+            }
+          } else {
+            for (var sIdx = 0; sIdx < n - 1; sIdx++) {
+              var sx1 = 12 + sIdx * colW + colW / 2;
+              var sx2 = 12 + (sIdx + 1) * colW + colW / 2;
+              var adjLine = document.createElementNS(SVG_NS, 'path');
+              adjLine.setAttribute('d', 'M ' + sx1 + ' ' + baseY + ' Q ' + ((sx1 + sx2) / 2) + ' ' + (baseY - 24) + ' ' + sx2 + ' ' + baseY);
+              adjLine.setAttribute('fill', 'none');
+              adjLine.setAttribute('stroke', (sIdx === focus || sIdx + 1 === focus) ? '#d97757' : '#58695f');
+              adjLine.setAttribute('stroke-opacity', (sIdx === focus || sIdx + 1 === focus) ? '0.9' : '0.45');
+              adjLine.setAttribute('stroke-width', (sIdx === focus || sIdx + 1 === focus) ? '2' : '1.2');
+              svg.appendChild(adjLine);
+            }
+            var seenKey = {};
+            for (var rIdx = 0; rIdx < n; rIdx++) {
+              var rk = tokKey(lastChips[rIdx]);
+              if (seenKey[rk] != null) {
+                var prevI = seenKey[rk];
+                var rx1 = 12 + prevI * colW + colW / 2;
+                var rx2 = 12 + rIdx * colW + colW / 2;
+                var repArc = document.createElementNS(SVG_NS, 'path');
+                var rCy = Math.max(14, baseY - Math.min(122, 26 + (rx2 - rx1) * 0.36));
+                repArc.setAttribute('d', 'M ' + rx1 + ' ' + baseY + ' Q ' + ((rx1 + rx2) / 2) + ' ' + rCy + ' ' + rx2 + ' ' + baseY);
+                repArc.setAttribute('fill', 'none');
+                repArc.setAttribute('stroke', '#6096e0');
+                repArc.setAttribute('stroke-dasharray', '4 3');
+                repArc.setAttribute('stroke-opacity', (prevI === focus || rIdx === focus) ? '0.95' : '0.55');
+                repArc.setAttribute('stroke-width', (prevI === focus || rIdx === focus) ? '2' : '1.4');
+                repArc.setAttribute('data-tooltip', displayText(lastChips[rIdx].text) + ' (#' + (prevI + 1) + ' \u2194 #' + (rIdx + 1) + ')');
+                svg.appendChild(repArc);
+              }
+              seenKey[rk] = rIdx;
+            }
+          }
+
+          for (var ni = 0; ni < n; ni++) {
+            var ch = lastChips[ni];
+            var cx = 12 + ni * colW + colW / 2;
+            var g = document.createElementNS(SVG_NS, 'g');
+            g.setAttribute('data-rel-idx', String(ni));
+            g.setAttribute('style', 'cursor:pointer');
+            var circ = document.createElementNS(SVG_NS, 'circle');
+            circ.setAttribute('cx', String(cx));
+            circ.setAttribute('cy', String(baseY + 4));
+            circ.setAttribute('r', ni === focus ? '6' : '4.2');
+            circ.setAttribute('fill', ni === focus ? '#d97757' : (TYPE_COLORS[ch.type] || '#9fb0a7'));
+            circ.setAttribute('stroke', ni === focus ? '#f2f7f4' : 'none');
+            circ.setAttribute('stroke-width', '1.4');
+            var lbl = document.createElementNS(SVG_NS, 'text');
+            lbl.setAttribute('x', String(cx));
+            lbl.setAttribute('y', String(baseY + 24));
+            lbl.setAttribute('text-anchor', 'middle');
+            lbl.setAttribute('fill', ni === focus ? '#f2f7f4' : '#9fb0a7');
+            lbl.setAttribute('font-size', '11');
+            lbl.setAttribute('font-family', 'ui-monospace, Menlo, monospace');
+            var txtStr = displayText(ch.text);
+            lbl.textContent = txtStr.length > 4 ? txtStr.slice(0, 3) + '\u2026' : txtStr;
+            g.appendChild(circ);
+            g.appendChild(lbl);
+            svg.appendChild(g);
+          }
+          wrap.appendChild(svg);
+          relBody.appendChild(wrap);
+        } else if (relTab === 'attn') {
+          var mWrap = document.createElement('div');
+          mWrap.className = 'tk-rel-scroll';
+          var grid = document.createElement('div');
+          grid.className = 'tk-rel-grid';
+          grid.style.gridTemplateColumns = '48px repeat(' + n + ', minmax(22px, 1fr))';
+          var corner = document.createElement('div');
+          corner.className = 'tk-rel-hdr';
+          corner.textContent = 'q\\k';
+          grid.appendChild(corner);
+          for (var hc = 0; hc < n; hc++) {
+            var chdr = document.createElement('div');
+            chdr.className = 'tk-rel-hdr' + (hc === focus ? ' tk-on' : '');
+            chdr.textContent = displayText(lastChips[hc].text);
+            chdr.setAttribute('data-rel-idx', String(hc));
+            grid.appendChild(chdr);
+          }
+          for (var rq = 0; rq < n; rq++) {
+            var rhdr = document.createElement('div');
+            rhdr.className = 'tk-rel-hdr' + (rq === focus ? ' tk-on' : '');
+            rhdr.textContent = (rq + 1) + ':' + displayText(lastChips[rq].text);
+            rhdr.setAttribute('data-rel-idx', String(rq));
+            grid.appendChild(rhdr);
+            for (var ck = 0; ck < n; ck++) {
+              var cell = document.createElement('div');
+              if (ck > rq) {
+                cell.className = 'tk-rel-cell tk-mask';
+              } else {
+                var val = attn.weights[rq][ck];
+                cell.className = 'tk-rel-cell' + (rq === focus ? ' tk-hi' : '');
+                cell.style.background = 'rgba(217, 119, 87, ' + Math.min(0.95, 0.05 + val * 0.92).toFixed(3) + ')';
+                cell.setAttribute('data-rel-idx', String(rq));
+                cell.setAttribute('data-tooltip', '#' + (rq + 1) + ' ' + displayText(lastChips[rq].text) + ' \u2190 #' + (ck + 1) + ' ' + displayText(lastChips[ck].text) + ' \u00B7 ' + (val * 100).toFixed(1) + '%');
+                if (n <= 14) cell.textContent = (val * 100).toFixed(0);
+              }
+              grid.appendChild(cell);
+            }
+          }
+          mWrap.appendChild(grid);
+          relBody.appendChild(mWrap);
+        } else {
+          var split = document.createElement('div');
+          split.className = 'tk-rel-split';
+          var mScroll = document.createElement('div');
+          mScroll.className = 'tk-rel-scroll';
+          var tn = trans.topNodes;
+          var tGrid = document.createElement('div');
+          tGrid.className = 'tk-rel-grid';
+          tGrid.style.gridTemplateColumns = '48px repeat(' + tn.length + ', minmax(22px, 1fr))';
+          var tCorner = document.createElement('div');
+          tCorner.className = 'tk-rel-hdr';
+          tCorner.textContent = '\u2192';
+          tGrid.appendChild(tCorner);
+          for (var tc = 0; tc < tn.length; tc++) {
+            var th = document.createElement('div');
+            th.className = 'tk-rel-hdr';
+            th.textContent = tn[tc].label;
+            th.setAttribute('data-rel-idx', String(tn[tc].indices[0]));
+            tGrid.appendChild(th);
+          }
+          for (var tr = 0; tr < tn.length; tr++) {
+            var trh = document.createElement('div');
+            trh.className = 'tk-rel-hdr';
+            trh.textContent = tn[tr].label;
+            trh.setAttribute('data-rel-idx', String(tn[tr].indices[0]));
+            tGrid.appendChild(trh);
+            for (var tc2 = 0; tc2 < tn.length; tc2++) {
+              var cnt = trans.matrix[tr][tc2];
+              var tCell = document.createElement('div');
+              tCell.className = 'tk-rel-cell';
+              if (cnt > 0) {
+                var ratio = trans.maxCell ? cnt / trans.maxCell : 0;
+                tCell.style.background = 'rgba(96, 150, 224, ' + (0.18 + ratio * 0.72).toFixed(2) + ')';
+                tCell.textContent = String(cnt);
+                tCell.setAttribute('data-tooltip', tn[tr].label + ' \u2192 ' + tn[tc2].label + ' \u00D7' + cnt);
+              }
+              tCell.setAttribute('data-rel-idx', String(tn[tr].indices[0]));
+              tGrid.appendChild(tCell);
+            }
+          }
+          mScroll.appendChild(tGrid);
+          split.appendChild(mScroll);
+
+          var listBox = document.createElement('div');
+          listBox.className = 'tk-rel-list';
+          var eTitle = document.createElement('div');
+          eTitle.className = 'text-muted';
+          eTitle.textContent = t('rel_top_edges');
+          listBox.appendChild(eTitle);
+          trans.topEdges.slice(0, 6).forEach(function (edge) {
+            var rowBtn = document.createElement('button');
+            rowBtn.type = 'button';
+            rowBtn.className = 'tk-rel-edge';
+            rowBtn.setAttribute('data-rel-idx', String(edge.positions[0][0]));
+            rowBtn.textContent = edge.fromLabel + ' \u2192 ' + edge.toLabel + '  (\u00D7' + edge.count + ')';
+            listBox.appendChild(rowBtn);
+          });
+          var rTitle = document.createElement('div');
+          rTitle.className = 'text-muted';
+          rTitle.style.marginTop = '4px';
+          rTitle.textContent = t('rel_repeats');
+          listBox.appendChild(rTitle);
+          if (!trans.repeats.length) {
+            var noRep = document.createElement('div');
+            noRep.className = 'tok-empty';
+            noRep.textContent = t('rel_no_repeats');
+            listBox.appendChild(noRep);
+          } else {
+            trans.repeats.slice(0, 5).forEach(function (rep) {
+              var repBtn = document.createElement('button');
+              repBtn.type = 'button';
+              repBtn.className = 'tk-rel-edge';
+              repBtn.setAttribute('data-rel-idx', String(rep.indices[0]));
+              repBtn.textContent = rep.label + '  \u00D7' + rep.count;
+              listBox.appendChild(repBtn);
+            });
+          }
+          split.appendChild(listBox);
+          relBody.appendChild(split);
+        }
+
+        if (attn.truncated && relTab !== 'adj') {
+          var trunc = document.createElement('div');
+          trunc.className = 'tok-empty';
+          trunc.style.marginTop = '6px';
+          trunc.textContent = t('rel_trunc')(MAX_REL_TOKENS, lastChips.length);
+          relBody.appendChild(trunc);
+        }
+
+        var focusSummary = '';
+        if (focus >= 0 && lastChips[focus]) {
+          focusSummary = '#' + (focus + 1) + ' "' + displayText(lastChips[focus].text) + '"' +
+            (lockedIdx === focus ? ' [' + t('rel_locked') + ']' : '');
+        }
+        relInfo.textContent = focusSummary ? (focusSummary + ' · ' + t('rel_hint_lock')) : t('rel_hint_lock');
+        syncChipHighlights();
+      }
+
       function render() {
+        clearTimeout(renderT);
         var text = input.value;
         var cps = Array.from(text).length;
-        var bytes = new TextEncoder().encode(text).length;
+        var bytes = UTF8E.encode(text).length;
         var res = tokenize(text);
+        lastChips = res.chips || [];
+        if (lockedIdx >= lastChips.length) lockedIdx = -1;
+        if (hoverIdx >= lastChips.length) hoverIdx = -1;
 
         stTokens.textContent = res.count;
         stChars.textContent = cps;
@@ -700,10 +1312,14 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         chipsEl.textContent = '';
         if (!text) {
           prevSigs = null;
+          lastChips = [];
+          lockedIdx = -1;
+          hoverIdx = -1;
           var note = document.createElement('span');
           note.className = 'tok-empty';
           note.textContent = t('empty');
           chipsEl.appendChild(note);
+          renderRelations();
           return;
         }
 
@@ -717,10 +1333,10 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         }
         var allSame = prevSigs && prevSigs.length === sigs.length && p === sigs.length;
         prevSigs = sigs;
-        var animate = !reduced && !allSame;
+        var animCount = Math.max(1, sigs.length - p);
+        var animate = !reduced && !allSame && (sigs.length - p) <= MAX_ANIM_CHIPS;
 
         /* 顺序接龙：步长随 Token 数自适应，总级联时长恒定 ≤ 约 1.7s */
-        var animCount = Math.max(1, sigs.length - p);
         var step = Math.max(20, Math.min(120, 1600 / animCount));
 
         var frag = document.createDocumentFragment();
@@ -728,6 +1344,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
           var el = document.createElement('span');
           el.className = 'tok-chip tk-' + t.type;
           el.setAttribute('role', 'listitem');
+          el.setAttribute('data-idx', String(i));
           el.setAttribute('aria-label', 'Token ' + (t.idx + 1) + ': ' + t.text);
           el.setAttribute('data-tooltip', t.tip || ('#' + (t.idx + 1) + ' · Token'));
           var anim = animate && i >= p;
@@ -751,6 +1368,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
           more.textContent = t('overflow')(MAX_CHIPS, res.count);
           chipsEl.appendChild(more);
         }
+        renderRelations();
       }
 
       /* ---------- 状态保存 / 恢复 ---------- */
@@ -761,7 +1379,10 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
           try {
             window.zcode && window.zcode.setWidgetState &&
               window.zcode.setWidgetState({
-                modelContent: { text: input.value.slice(0, 4000), encoding: sel.value, lang: lang }
+                modelContent: {
+                  text: input.value.slice(0, 4000), encoding: sel.value, lang: lang,
+                  relOpen: relOpen, relTab: relTab, relArcMode: relArcMode, relHead: relHead
+                }
               });
           } catch (e) {}
         }, 400);
@@ -781,7 +1402,12 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         });
       }
 
-      input.addEventListener('input', function () { render(); saveState(); });
+      input.addEventListener('input', function () {
+        saveState();
+        clearTimeout(renderT);
+        if (input.value.length > 500) renderT = setTimeout(render, 60);
+        else render();
+      });
       sel.addEventListener('change', function () { saveState(); setEncoding(sel.value); });
       qsa('#tokviz .tk-lang button').forEach(function (lbtn) {
         lbtn.addEventListener('click', function () {
@@ -796,6 +1422,65 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
           render(); saveState();
         });
       });
+      if (relBtn) {
+        relBtn.addEventListener('click', function () {
+          relOpen = !relOpen;
+          renderRelations();
+          saveState();
+        });
+      }
+      qsa('#tokviz [data-rel-tab]').forEach(function (tb) {
+        tb.addEventListener('click', function () {
+          relTab = tb.getAttribute('data-rel-tab');
+          renderRelations();
+          saveState();
+        });
+      });
+      qsa('#tokviz [data-arc-mode]').forEach(function (ab) {
+        ab.addEventListener('click', function () {
+          relArcMode = ab.getAttribute('data-arc-mode');
+          renderRelations();
+          saveState();
+        });
+      });
+      qsa('#tokviz [data-rel-head]').forEach(function (hb) {
+        hb.addEventListener('click', function () {
+          relHead = hb.getAttribute('data-rel-head');
+          renderRelations();
+          saveState();
+        });
+      });
+      function bindFocusDelegation(container, attrName) {
+        if (!container) return;
+        container.addEventListener('mouseover', function (e) {
+          if (!relOpen) return;
+          var tEl = e.target && e.target.closest && e.target.closest('[' + attrName + ']');
+          if (!tEl) return;
+          var idx = Number(tEl.getAttribute(attrName));
+          if (idx === hoverIdx) return;
+          hoverIdx = idx;
+          if (lockedIdx < 0) renderRelations();
+        });
+        container.addEventListener('mouseout', function (e) {
+          if (!relOpen) return;
+          var relTarget = e.relatedTarget;
+          if (relTarget && container.contains && container.contains(relTarget)) return;
+          if (hoverIdx !== -1) {
+            hoverIdx = -1;
+            if (lockedIdx < 0) renderRelations();
+          }
+        });
+        container.addEventListener('click', function (e) {
+          if (!relOpen) return;
+          var tEl = e.target && e.target.closest && e.target.closest('[' + attrName + ']');
+          if (!tEl) return;
+          var idx = Number(tEl.getAttribute(attrName));
+          lockedIdx = (lockedIdx === idx) ? -1 : idx;
+          renderRelations();
+        });
+      }
+      bindFocusDelegation(chipsEl, 'data-idx');
+      bindFocusDelegation(relBody, 'data-rel-idx');
 
       var saved = null;
       try { saved = window.zcode && window.zcode.widgetState && window.zcode.widgetState.modelContent; } catch (e) {}
@@ -803,6 +1488,10 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
       else input.value = DEFAULT;
       if (saved && ALL_ENC.indexOf(saved.encoding) !== -1) sel.value = saved.encoding;
       if (saved && ALL_LANGS.indexOf(saved.lang) !== -1) lang = saved.lang;
+      if (saved && typeof saved.relOpen === 'boolean') relOpen = saved.relOpen;
+      if (saved && ['arc', 'attn', 'adj'].indexOf(saved.relTab) !== -1) relTab = saved.relTab;
+      if (saved && ['attn', 'seq'].indexOf(saved.relArcMode) !== -1) relArcMode = saved.relArcMode;
+      if (saved && ['balanced', 'local', 'struct'].indexOf(saved.relHead) !== -1) relHead = saved.relHead;
       applyLang(lang);
 
       render();
@@ -815,8 +1504,28 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
         input.value = mc.text;
         if (mc.encoding && ALL_ENC.indexOf(mc.encoding) !== -1) sel.value = mc.encoding;
         if (mc.lang && ALL_LANGS.indexOf(mc.lang) !== -1) applyLang(mc.lang);
+        if (typeof mc.relOpen === 'boolean') relOpen = mc.relOpen;
+        if (['arc', 'attn', 'adj'].indexOf(mc.relTab) !== -1) relTab = mc.relTab;
+        if (['attn', 'seq'].indexOf(mc.relArcMode) !== -1) relArcMode = mc.relArcMode;
+        if (['balanced', 'local', 'struct'].indexOf(mc.relHead) !== -1) relHead = mc.relHead;
         render();
       });
+
+      if (typeof window.__TOKEN_TEST_HOOK__ === 'function') {
+        window.__TOKEN_TEST_HOOK__({
+          I18N: I18N, ALL_LANGS: ALL_LANGS, applyLang: applyLang,
+          ensureModule: ensureModule, approxTokens: approxTokens,
+          classifyReal: classifyReal, localTokens: localTokens,
+          tokenize: tokenize, render: render, setEncoding: setEncoding,
+          computeTransitions: computeTransitions, computeApproxAttention: computeApproxAttention,
+          renderRelations: renderRelations,
+          draw: draw, resize: resize, swells: swells,
+          getBadgeKey: function () { return badgeKey; },
+          getModEnc: function () { return modEnc; },
+          getLang: function () { return lang; },
+          getRelState: function () { return { relOpen: relOpen, relTab: relTab, relArcMode: relArcMode, relHead: relHead, lockedIdx: lockedIdx }; }
+        });
+      }
     })();
   </script>
 </div>
@@ -838,10 +1547,7 @@ try { window.zcode.widgetState = JSON.parse(localStorage.getItem('token-widget-s
   #tokviz textarea.form-control { min-height: 88px; }
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
 <script>
-if (window.lucide) lucide.createIcons({ attrs: { width: 16, height: 16 } });
-
 /* data-tooltip 兜底（会话内由宿主提供，独立打开时用这个） */
 (function () {
   var tip = document.createElement('div');
