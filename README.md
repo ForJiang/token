@@ -1,5 +1,9 @@
 # Token
 
+> 把一句话拆成一个个 Token 的可视化工具：真实 GPT 词表本地切分，文本不上传
+>
+> Visualize how text is split into tokens with real GPT vocabularies — text never leaves your browser
+
 把一句话拆成一个个 Token 的可视化小工具。
 
 作者：**ForJiang** · [github.com/ForJiang](https://github.com/ForJiang)
@@ -29,3 +33,7 @@
 
 纯静态单页（无构建、无后端）。切分基于 [gpt-tokenizer](https://github.com/niieani/gpt-tokenizer)，
 逐 Token 文本通过 `decodeNativeGenerator` + 流式 `TextDecoder` 还原，正确处理跨 Token 的 UTF-8 字节序列。
+
+## License
+
+本项目以 [GPL-3.0](LICENSE) 许可发布 © 2026 ForJiang / Released under the [GPL-3.0](LICENSE).
