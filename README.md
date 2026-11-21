@@ -4,6 +4,8 @@
 >
 > Visualize how text is split into tokens with real GPT vocabularies — text never leaves your browser
 
+English intro at the bottom: [English](#english)
+
 把一句话拆成一个个 Token 的可视化小工具。
 
 作者：**ForJiang** · [github.com/ForJiang](https://github.com/ForJiang)
@@ -37,3 +39,33 @@
 ## License
 
 本项目以 [GPL-3.0](LICENSE) 许可发布 © 2026 ForJiang / Released under the [GPL-3.0](LICENSE).
+
+---
+
+## English
+
+**Token** — a tiny visualizer that shows how a sentence is split into tokens, one colored block at a time.
+
+Author: **ForJiang** · [github.com/ForJiang](https://github.com/ForJiang)
+
+### Features
+
+- **Real GPT vocabularies** (split locally in the browser, text never uploaded): o200k_base (GPT-4o), o200k_harmony (GPT-5 / gpt-oss), cl100k_base (GPT-4 / 3.5), p50k_base (GPT-3.5 / Codex), r50k_base (GPT-2 / GPT-3)
+- **Local baselines**: character-level (1 token per character, with Unicode code points) and UTF-8 byte-level (1 token per byte)
+- Hover any block for its index, token ID and byte content; byte tokens show the exact UTF-8 bytes
+- Token / character counts and compression ratio; one-click sample presets for Chinese, English, mixed and code text
+- **Token relationship graphs** (collapsible panel): sequence arc diagram, causal-attention approximate heatmap (teaching heuristic, not real model weights) and adjacent-transition matrix, with two-way hover / click-lock linking between blocks and nodes
+- **4-language UI**: 简体中文 / 繁體中文 / English / 日本語, switched in place from the top-right pill, choice remembered
+- Black character-wave background (Glyph Swell style) rippling under the pointer, respects the system reduced-motion setting
+
+### Usage
+
+Online: <https://forjiang.github.io/token/>
+
+Local: open `index.html` directly. Vocabularies load from a CDN and degrade to a built-in approximate splitter when offline.
+
+### Tech
+
+Pure static single page (no build, no backend). Splitting is based on [gpt-tokenizer](https://github.com/niieani/gpt-tokenizer); per-token text is reconstructed with `decodeNativeGenerator` + streaming `TextDecoder`, correctly handling UTF-8 byte sequences that span tokens.
+
+License: [GPL-3.0](LICENSE) © 2026 ForJiang
